@@ -4,10 +4,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col">
-      <div className="flex grow">
+    <div className="h-screen flex flex-col">
+      <div className="flex h-full">
         <Sidebar />
-        <main className="grow flex flex-col">
+        <main className="grow h-full flex flex-col max-h-full">
           <header className="px-3 py-1 border-b border-border">
             <div className="h-16 flex items-center">
               <Avatar className="ml-auto w-8 h-8">

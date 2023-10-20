@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import ChatMessage from "@/components/chat-message";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Message } from "@/lib/types";
 
 const formSchema = z.object({
   message: z.string().min(2, {
@@ -27,6 +29,8 @@ const formSchema = z.object({
 });
 
 export default function ChatPage() {
+  const [messages, setMessages] = useState<Message[]>([]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,33 +42,25 @@ export default function ChatPage() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values);
+    setMessages((prev) => [
+      ...prev,
+      { content: values.message, time: "11:30" },
+    ]);
+    form.reset({ message: "" });
   }
   return (
-    <div className="grow flex flex-col">
-      <div className="grow p-4 flex flex-col justify-end">
-        <div className="flex flex-col gap-2">
-          <ChatMessage message="Hello, how are you?" time="10:01" />
-          <ChatMessage
-            message="Hello, how are you?"
-            time="10:01"
-            isCurrentUser
-          />
-          <ChatMessage message="Hello, how are you?" time="10:01" />
-          <ChatMessage message="Hello, how are you?" time="10:01" />
-          <ChatMessage message="Hello, how are you?" time="10:01" />
-          <ChatMessage
-            message="Hello, how are you?"
-            time="10:01"
-            isCurrentUser
-          />
-          <ChatMessage
-            message="Hello, how are you?"
-            time="10:01"
-            isCurrentUser
-          />
+    <div className="h-[calc(100vh-4.5rem)] flex flex-col">
+      <ScrollArea className="absolute h-full inset-x-0 px-4 flex flex-col justify-end">
+        <div className="flex flex-col gap-2 py-2">
+          {messages.map((message) => (
+            <ChatMessage
+              key={message.content}
+              message={message.content}
+              time={message.time}
+            />
+          ))}
         </div>
-      </div>
+      </ScrollArea>
       <div className="p-4 bg-accent">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2">
