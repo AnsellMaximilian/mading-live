@@ -1,6 +1,6 @@
-import React from "react";
+import React, { HTMLProps } from "react";
 
-type Props = {
+type Props = HTMLProps<HTMLDivElement> & {
   message: string;
   time: string;
   isCurrentUser?: boolean;

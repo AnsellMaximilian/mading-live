@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -31,6 +32,8 @@ const formSchema = z.object({
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
 
+  const chatBottomRef = useRef<HTMLDivElement>(null);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,22 +47,34 @@ export default function ChatPage() {
     // ✅ This will be type-safe and validated.
     setMessages((prev) => [
       ...prev,
-      { content: values.message, time: "11:30" },
+      {
+        id: uuidv4(),
+        content: values.message,
+        time: "11:30",
+      },
     ]);
+
     form.reset({ message: "" });
   }
+
+  useEffect(() => {
+    if (chatBottomRef.current) {
+      chatBottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
   return (
     <div className="h-[calc(100vh-4.5rem)] flex flex-col">
       <ScrollArea className="absolute h-full inset-x-0 px-4 flex flex-col justify-end">
-        <div className="flex flex-col gap-2 py-2">
+        <div className="flex flex-col gap-2 py-2 relative">
           {messages.map((message) => (
             <ChatMessage
-              key={message.content}
+              key={message.id}
               message={message.content}
               time={message.time}
             />
           ))}
         </div>
+        <div ref={chatBottomRef} className="relative top-24"></div>
       </ScrollArea>
       <div className="p-4 bg-accent">
         <Form {...form}>
