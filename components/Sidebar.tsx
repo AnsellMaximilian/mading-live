@@ -38,7 +38,7 @@ export default function Sidebar({ className }: SidebarProps) {
                 <LayoutDashboard size={24} className="mr-2" />
                 <div className="hidden md:flex flex-col items-start">
                   <span>Overview</span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground hidden 2xl:block text-left">
                     Get an overview of your community.
                   </span>
                 </div>
@@ -56,7 +56,7 @@ export default function Sidebar({ className }: SidebarProps) {
                 <MessagesSquare size={24} className="mr-2" />
                 <div className="hidden md:flex flex-col items-start">
                   <span>Chat</span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground hidden 2xl:block text-left">
                     Converse with members.
                   </span>
                 </div>
@@ -74,7 +74,7 @@ export default function Sidebar({ className }: SidebarProps) {
                 <CalendarDays size={24} className="mr-2" />
                 <div className="hidden md:flex flex-col items-start">
                   <span>Events</span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground hidden 2xl:block text-left">
                     Manage your community events.
                   </span>
                 </div>
@@ -92,7 +92,7 @@ export default function Sidebar({ className }: SidebarProps) {
                 <Vote size={24} className="mr-2" />
                 <div className="hidden md:flex flex-col items-start">
                   <span>Survey</span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground hidden 2xl:block text-left">
                     Gauge opinions or vote on something.
                   </span>
                 </div>
@@ -110,7 +110,7 @@ export default function Sidebar({ className }: SidebarProps) {
                 <Settings size={24} className="mr-2" />
                 <div className="hidden md:flex flex-col items-start">
                   <span>Settings</span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground hidden 2xl:block text-left">
                     Update community settings.
                   </span>
                 </div>

@@ -2,6 +2,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { useChannel } from "ably/react";
+import type { Types } from "ably";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -34,6 +36,14 @@ export default function ChatPage() {
 
   const chatBottomRef = useRef<HTMLDivElement>(null);
 
+  const { channel: messagesChannel, channelError } = useChannel(
+    "messages",
+    (ablyMessage: Types.Message) => {
+      const message: Message = ablyMessage.data;
+      setMessages((prev) => [...prev, message]);
+    }
+  );
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,14 +55,20 @@ export default function ChatPage() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: uuidv4(),
-        content: values.message,
-        time: "11:30",
-      },
-    ]);
+    // setMessages((prev) => [
+    //   ...prev,
+    //   {
+    //     id: uuidv4(),
+    //     content: values.message,
+    //     time: "11:30",
+    //   },
+    // ]);
+
+    messagesChannel.publish("messages", {
+      id: uuidv4(),
+      content: values.message,
+      time: "11:30",
+    });
 
     form.reset({ message: "" });
   }
