@@ -66,6 +66,7 @@ export default function ChatPage() {
 
     messagesChannel.publish("messages", {
       id: uuidv4(),
+      username: "Ansell Maximilian",
       content: values.message,
       time: "11:30",
     });
@@ -83,11 +84,7 @@ export default function ChatPage() {
       <ScrollArea className="absolute h-full inset-x-0 px-4 flex flex-col justify-end">
         <div className="flex flex-col gap-2 py-2 relative">
           {messages.map((message) => (
-            <ChatMessage
-              key={message.id}
-              message={message.content}
-              time={message.time}
-            />
+            <ChatMessage key={message.id} message={message} />
           ))}
         </div>
         <div ref={chatBottomRef} className="relative top-24"></div>
