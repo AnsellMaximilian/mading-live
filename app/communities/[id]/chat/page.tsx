@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { SendHorizontal } from "lucide-react";
+import moment from "moment";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import ChatMessage from "@/components/chat-message";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Message } from "@/lib/types";
+import { useUser } from "@/context/UserContext";
 
 const formSchema = z.object({
   message: z.string().min(2, {
@@ -33,6 +35,8 @@ const formSchema = z.object({
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
+
+  const { currentUser } = useUser();
 
   const chatBottomRef = useRef<HTMLDivElement>(null);
 
@@ -55,21 +59,17 @@ export default function ChatPage() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    // setMessages((prev) => [
-    //   ...prev,
-    //   {
-    //     id: uuidv4(),
-    //     content: values.message,
-    //     time: "11:30",
-    //   },
-    // ]);
 
-    messagesChannel.publish("messages", {
-      id: uuidv4(),
-      username: "Ansell Maximilian",
-      content: values.message,
-      time: "11:30",
-    });
+    if (currentUser) {
+      const message: Message = {
+        id: uuidv4(),
+        username: currentUser.email || "ANON",
+        content: values.message,
+        time: moment().format("HH:MM"),
+        userId: currentUser.id,
+      };
+      messagesChannel.publish("messages", message);
+    }
 
     form.reset({ message: "" });
   }
@@ -84,7 +84,11 @@ export default function ChatPage() {
       <ScrollArea className="absolute h-full inset-x-0 px-4 flex flex-col justify-end">
         <div className="flex flex-col gap-2 py-2 relative">
           {messages.map((message) => (
-            <ChatMessage key={message.id} message={message} />
+            <ChatMessage
+              key={message.id}
+              message={message}
+              isCurrentUser={currentUser?.id === message.userId}
+            />
           ))}
         </div>
         <div ref={chatBottomRef} className="relative top-24"></div>
