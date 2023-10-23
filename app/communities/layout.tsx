@@ -15,12 +15,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <UserContextProvider>
       <AblyProvider client={client}>
-        <div className="h-screen flex flex-col overflow-hidden">
+        <div className="h-screen flex flex-col">
           <div className="flex h-full">
             <Sidebar />
             <main className="grow h-full flex flex-col max-h-full">
-              <header className="px-3 py-1 border-b border-border">
-                <div className="h-16 flex items-center">
+              <header className="px-3 py-1 border-b border-border h-[4.5rem]">
+                <div className="flex items-center">
                   <Avatar className="ml-auto w-8 h-8">
                     <AvatarImage src="https://github.com/shadcn.png" />
                     <AvatarFallback>AM</AvatarFallback>
