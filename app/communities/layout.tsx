@@ -14,24 +14,7 @@ const client = new Realtime.Promise({
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <UserContextProvider>
-      <AblyProvider client={client}>
-        <div className="h-screen flex flex-col">
-          <div className="flex h-full">
-            <Sidebar />
-            <main className="grow h-full flex flex-col max-h-full">
-              <header className="px-3 py-1 border-b border-border h-[4.5rem]">
-                <div className="flex items-center">
-                  <Avatar className="ml-auto w-8 h-8">
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>AM</AvatarFallback>
-                  </Avatar>
-                </div>
-              </header>
-              <div className="grow flex flex-col">{children}</div>
-            </main>
-          </div>
-        </div>
-      </AblyProvider>
+      <AblyProvider client={client}>{children}</AblyProvider>
     </UserContextProvider>
   );
 }
