@@ -42,7 +42,7 @@ export default function Sidebar({ className }: SidebarProps) {
           {!loading && community ? (
             <div className="space-y-1">
               <ActiveLink
-                href="/communities/dashboard"
+                href={`/communities/${community.id}/dashboard`}
                 className="block rounded-md"
                 activeClass="bg-accent text-accent-foreground"
               >

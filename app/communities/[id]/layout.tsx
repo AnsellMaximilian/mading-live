@@ -44,7 +44,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         }}
       >
         <AblyProvider client={client}>
-          <div className="h-screen flex flex-col">
+          <div className="flex-col">
             <div className="flex h-full">
               <Sidebar />
               <main className="grow h-full flex flex-col max-h-full">

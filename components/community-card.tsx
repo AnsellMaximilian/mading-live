@@ -28,7 +28,7 @@ export default function CommunityCard({ community }: Props) {
       <CardFooter className="flex justify-between">
         {/* <Button variant="outline">Cancel</Button> */}
         <Link
-          href={`/communties/${community.id}/dashboard`}
+          href={`/communities/${community.id}/dashboard`}
           className="ml-auto"
         >
           <Button>View</Button>
