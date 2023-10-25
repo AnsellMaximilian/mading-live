@@ -26,6 +26,7 @@ import ChatMessage from "@/components/chat-message";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Message } from "@/lib/types";
 import { useUser } from "@/context/UserContext";
+import { useCommunity } from "@/context/CommunityContext";
 
 const formSchema = z.object({
   message: z.string().min(2, {
@@ -39,6 +40,8 @@ export default function ChatPage() {
   const { currentUser } = useUser();
 
   const chatBottomRef = useRef<HTMLDivElement>(null);
+
+  const { community } = useCommunity();
 
   const { channel: messagesChannel, channelError } = useChannel(
     "messages",

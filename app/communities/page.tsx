@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -32,6 +32,8 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/lib/schema";
 import { useUser } from "@/context/UserContext";
 import { useRouter } from "next/navigation";
+import { Community } from "@/lib/types";
+import CommunityCard from "@/components/community-card";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -41,7 +43,10 @@ const formSchema = z.object({
 });
 
 export default function CommunitiesPage() {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [isCreateLoading, setIsCreateLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const [communities, setCommunities] = useState<Community[]>([]);
 
   const { currentUser } = useUser();
   const router = useRouter();
@@ -56,9 +61,23 @@ export default function CommunitiesPage() {
     },
   });
 
+  useEffect(() => {
+    (async () => {
+      if (currentUser) {
+        setIsLoading(true);
+        const { data } = await supabase
+          .from("communities")
+          .select("*, community_members!inner(user_id)")
+          .eq("community_members.user_id", currentUser.id);
+        if (data) setCommunities(data);
+        setIsLoading(false);
+      }
+    })();
+  }, [currentUser]);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (currentUser) {
-      setIsLoading(true);
+      setIsCreateLoading(true);
 
       const { data, error } = await supabase
         .from("communities")
@@ -67,80 +86,105 @@ export default function CommunitiesPage() {
           description: values.description,
           owner_id: currentUser.id,
         })
-        .select();
+        .select()
+        .single();
 
-      if (data && data.length > 0) router.push(`/communities/${data[0].id}`);
+      if (data) router.push(`/communities/${data.id}`);
 
-      setIsLoading(false);
+      setIsCreateLoading(false);
     }
   }
 
+  if (isLoading)
+    return (
+      <div className="h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+
   return (
-    <div className="p-4 min-h-screen flex items-center justify-center bg-secondary">
-      <div className="">
-        <Card className="w-[350px]">
-          <CardHeader>
-            <CardTitle>Create community</CardTitle>
-            <CardDescription>Create your first community.</CardDescription>
-          </CardHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <CardContent>
-                <div className="grid gap-2">
-                  <div className="grid w-full items-center gap-4">
-                    <div className="flex flex-col space-y-1.5">
-                      <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Name</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="Name of your community"
-                                type="text"
-                                autoComplete="off"
-                                {...field}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="flex flex-col space-y-1.5">
-                      <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Name</FormLabel>
-                            <FormControl>
-                              <Textarea
-                                placeholder="Community description."
-                                className="resize-none"
-                                {...field}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
+    <div className="min-h-screen flex flex-col">
+      {!isLoading && communities.length > 0 && (
+        <div className="p-4">
+          <div className="grid gap-2 grid-cols-12">
+            {communities.map((community) => (
+              <div
+                key={community.id}
+                className="col-span-12 md:col-span-6 lg:col-span-4"
+              >
+                <CommunityCard community={community} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {!isLoading && communities.length <= 0 && (
+        <div className="grow flex items-center justify-center bg-secondary">
+          <Card className="w-[350px]">
+            <CardHeader>
+              <CardTitle>Create community</CardTitle>
+              <CardDescription>Create your first community.</CardDescription>
+            </CardHeader>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <CardContent>
+                  <div className="grid gap-2">
+                    <div className="grid w-full items-center gap-4">
+                      <div className="flex flex-col space-y-1.5">
+                        <FormField
+                          control={form.control}
+                          name="name"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Name</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="Name of your community"
+                                  type="text"
+                                  autoComplete="off"
+                                  {...field}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div className="flex flex-col space-y-1.5">
+                        <FormField
+                          control={form.control}
+                          name="description"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Name</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  placeholder="Community description."
+                                  className="resize-none"
+                                  {...field}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button variant="outline">Cancel</Button>
-                <Button disabled={isLoading}>
-                  {isLoading && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  Create
-                </Button>
-              </CardFooter>
-            </form>
-          </Form>
-        </Card>
-      </div>
+                </CardContent>
+                <CardFooter className="flex justify-between">
+                  <Button variant="outline">Cancel</Button>
+                  <Button disabled={isCreateLoading}>
+                    {isCreateLoading && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Create
+                  </Button>
+                </CardFooter>
+              </form>
+            </Form>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
