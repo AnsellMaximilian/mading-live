@@ -1,3 +1,6 @@
+import type { User } from "@supabase/auth-helpers-nextjs";
+import { Database } from "./schema";
+
 export type Message = {
   id: string;
   username: string;
@@ -12,4 +15,8 @@ export type Community = {
   description: string | null;
   owner_id: string | null;
   created_at: string;
+};
+
+export type UserWithProfile = User & {
+  profile: Database["public"]["Tables"]["profiles"]["Row"];
 };

@@ -5,15 +5,14 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import {
-  createClientComponentClient,
-  User,
-} from "@supabase/auth-helpers-nextjs";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "@/lib/schema";
+import { UserWithProfile } from "@/lib/types";
 
 export interface UserContextData {
-  currentUser: User | null;
+  currentUser: UserWithProfile | null;
   loading: boolean;
-  setCurrentUser: (user: User | null) => void;
+  setCurrentUser: (user: UserWithProfile | null) => void;
 }
 
 export const UserContext = createContext<UserContextData>({
@@ -25,24 +24,29 @@ export const UserContext = createContext<UserContextData>({
 export const UserContextProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserWithProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClientComponentClient();
 
   useEffect(() => {
-    (async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+    const unsub = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session) {
-        setCurrentUser(session.user);
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select()
+          .eq("id", session.user.id)
+          .single();
+        if (profile) {
+          setCurrentUser({ ...session.user, profile });
+        }
       } else {
         setCurrentUser(null);
       }
-    })();
+    });
+    return () => unsub.data.subscription.unsubscribe();
   }, []);
 
-  const handleSetCurrentUser = (user: User | null) => {
+  const handleSetCurrentUser = (user: UserWithProfile | null) => {
     setCurrentUser(user);
   };
 

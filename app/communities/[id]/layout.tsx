@@ -30,6 +30,7 @@ import { Community } from "@/lib/types";
 import { Button, buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { UserNav } from "@/components/ui/user-nav";
 
 const client = new Realtime.Promise({
   authUrl: "http://localhost:3000/api/ably-auth",
@@ -109,10 +110,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         </PopoverContent>
                       </Popover>
 
-                      <Avatar className="w-8 h-8">
-                        <AvatarImage src="https://github.com/shadcn.png" />
-                        <AvatarFallback>AM</AvatarFallback>
-                      </Avatar>
+                      <UserNav />
                     </div>
                   </div>
                 </header>

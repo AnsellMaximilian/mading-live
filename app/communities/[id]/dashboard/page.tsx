@@ -4,15 +4,24 @@ import React, { useState, useRef, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useChannel } from "ably/react";
 import type { Types } from "ably";
-import { Users } from "lucide-react";
+import { Plus, Users, Loader2 } from "lucide-react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
-import { SendHorizontal } from "lucide-react";
 import moment from "moment";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   Form,
   FormControl,
@@ -36,10 +45,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "@/lib/schema";
 
 const formSchema = z.object({
-  message: z.string().min(2, {
-    message: "Message must be at least 2 characters.",
+  email: z.string().min(2, {
+    message: "Email must be at least 2 characters.",
   }),
 });
 
@@ -47,6 +58,33 @@ export default function DashboardPage() {
   const { currentUser } = useUser();
 
   const { community } = useCommunity();
+  const supabase = createClientComponentClient<Database>();
+
+  const [isInviteLoading, setIsInviteLoading] = useState(false);
+  const inviteForm = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  async function sendInvite(values: z.infer<typeof formSchema>) {
+    if (currentUser) {
+      setIsInviteLoading(true);
+      const { data } = await supabase
+        .from("profiles")
+        .select()
+        .eq("email", values.email)
+        .single();
+
+      if (data) {
+        console.log(data);
+      }
+      setIsInviteLoading(false);
+    }
+
+    inviteForm.reset({ email: "" });
+  }
 
   return (
     <div className="p-4">
@@ -55,7 +93,64 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between space-y-2">
             <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
             <div className="flex items-center space-x-2">
-              <Button>Download</Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="mr-2 h-4 w-4" /> Invite
+                  </Button>
+                </DialogTrigger>
+
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Invite User</DialogTitle>
+                    <DialogDescription>
+                      Invite user by their email.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Form {...inviteForm}>
+                    <form
+                      onSubmit={inviteForm.handleSubmit(sendInvite)}
+                      id="invite-form"
+                    >
+                      <div className="grid gap-4 py-4">
+                        <FormField
+                          control={inviteForm.control}
+                          name="email"
+                          render={({ field }) => (
+                            <FormItem className="grid grid-cols-4 items-center gap-4">
+                              <FormLabel className="text-right">
+                                Email
+                              </FormLabel>
+
+                              <FormControl>
+                                <Input
+                                  type="text"
+                                  autoComplete="off"
+                                  className="col-span-3"
+                                  {...field}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </form>
+                  </Form>
+
+                  <DialogFooter>
+                    <Button
+                      disabled={isInviteLoading}
+                      type="submit"
+                      form="invite-form"
+                    >
+                      {isInviteLoading && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Invite
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
           <div className="space-y-4">

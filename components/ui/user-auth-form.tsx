@@ -29,12 +29,16 @@ const formSchema = z.object({
 });
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
-  type?: "SIGN_UP" | "SIGN_IN";
-  handleSubmit: (email: string, password: string) => Promise<void>;
+  type: "SIGN_IN" | "SIGN_UP";
+  handleSubmit: (
+    email: string,
+    password: string,
+    username?: string
+  ) => Promise<void>;
 }
 
 export function UserAuthForm({
-  type = "SIGN_UP",
+  type = "SIGN_IN",
   handleSubmit,
   className,
   ...props
@@ -96,7 +100,7 @@ export function UserAuthForm({
           />
           <Button disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Sign Up
+            {type === "SIGN_IN" ? "Sign In" : "Sign Up"}
           </Button>
         </form>
       </Form>

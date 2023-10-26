@@ -9,8 +9,9 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { UserAuthForm } from "@/components/ui/user-auth-form";
 import { useUser } from "@/context/UserContext";
+import { Database } from "@/lib/schema";
+import { UserAuthForm } from "@/components/ui/user-auth-form";
 
 // export const metadata: Metadata = {
 //   title: "Authentication",
@@ -19,7 +20,7 @@ import { useUser } from "@/context/UserContext";
 
 export default function SignUpPage() {
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = createClientComponentClient<Database>();
   const { currentUser, setCurrentUser } = useUser();
 
   const handleSignUp = async (email: string, password: string) => {
@@ -30,11 +31,7 @@ export default function SignUpPage() {
         emailRedirectTo: `${location.origin}/auth/callback`,
       },
     });
-    if (res.error) {
-      return;
-    }
-    setCurrentUser(res.data.user);
-    router.push("/communities/id/chat");
+    router.push("/communities");
   };
 
   const handleSignOut = async () => {
@@ -92,7 +89,7 @@ export default function SignUpPage() {
                 Enter your email below to create your account
               </p>
             </div>
-            <UserAuthForm handleSubmit={handleSignUp} />
+            <UserAuthForm handleSubmit={handleSignUp} type="SIGN_UP" />
             <p className="px-8 text-center text-sm text-muted-foreground">
               By clicking continue, you agree to our{" "}
               <Link
