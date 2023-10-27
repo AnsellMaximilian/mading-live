@@ -111,6 +111,55 @@ export interface Database {
           }
         ]
       }
+      notifications: {
+        Row: {
+          community_id: string | null
+          content_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          read: boolean
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string | null
+        }
+        Insert: {
+          community_id?: string | null
+          content_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          read: boolean
+          title: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string | null
+        }
+        Update: {
+          community_id?: string | null
+          content_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          read?: boolean
+          title?: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_community_id_fkey"
+            columns: ["community_id"]
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -153,7 +202,7 @@ export interface Database {
       }
     }
     Enums: {
-      [_ in never]: never
+      notification_type: "community_invitation" | "info"
     }
     CompositeTypes: {
       [_ in never]: never

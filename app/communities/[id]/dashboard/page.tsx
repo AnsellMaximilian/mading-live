@@ -71,14 +71,33 @@ export default function DashboardPage() {
   async function sendInvite(values: z.infer<typeof formSchema>) {
     if (currentUser) {
       setIsInviteLoading(true);
-      const { data } = await supabase
+      const { data: user } = await supabase
         .from("profiles")
         .select()
         .eq("email", values.email)
         .single();
-
-      if (data) {
-        console.log(data);
+      if (user && community) {
+        const { data: invitation } = await supabase
+          .from("community_invitations")
+          .insert({
+            user_id: user.id,
+            community_id: community.id,
+          })
+          .select()
+          .single();
+        if (invitation) {
+          const { data: notification } = await supabase
+            .from("notifications")
+            .insert({
+              user_id: user.id,
+              community_id: community.id,
+              title: `You received an invitation to join the community "${community.name}"`,
+              read: false,
+              type: "community_invitation",
+            })
+            .select()
+            .single();
+        }
       }
       setIsInviteLoading(false);
     }

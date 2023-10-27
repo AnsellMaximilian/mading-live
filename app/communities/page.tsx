@@ -42,6 +42,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bell, CheckIcon } from "lucide-react";
 import { UserNav } from "@/components/ui/user-nav";
+import Notifications from "@/components/ui/notifications";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -115,33 +116,7 @@ export default function CommunitiesPage() {
       <header className="px-3 py-1 border-b border-border h-[4.5rem] flex items-center">
         <div className="flex items-center grow">
           <div className="ml-auto flex items-center gap-2">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" size="icon" className="relative">
-                  <Bell className="h-4 w-4" />
-                  <div className="h-2 w-2 rounded-full bg-red-600 absolute top-2 right-2"></div>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="p-0">
-                <div className="p-4 bg-secondary font-semibold tracking-tight border-b border-border text-sm">
-                  Notifications
-                </div>
-                <div className="flex flex-col">
-                  <Button
-                    variant="ghost"
-                    className="font-normal text-left justify-start h-auto after:content-[''] after:absolute after:left-2 relative after:h-1 after:w-1 after:rounded-full after:bg-red-600"
-                  >
-                    You were invited to join the Ably community.
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="font-normal text-left justify-start h-auto after:content-[''] after:absolute after:left-2 relative after:h-1 after:w-1 after:rounded-full after:bg-red-600"
-                  >
-                    You just logged in.
-                  </Button>
-                </div>
-              </PopoverContent>
-            </Popover>
+            <Notifications />
 
             <UserNav />
           </div>
