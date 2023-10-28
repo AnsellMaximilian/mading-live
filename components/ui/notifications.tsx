@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {
   Command,
@@ -18,9 +20,17 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { useNotifications } from "@/context/NotificationContext";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "@/lib/schema";
+import { useUser } from "@/context/UserContext";
 
 export default function Notifications() {
   const { notifications } = useNotifications();
+  const supabase = createClientComponentClient<Database>();
+
+  const router = useRouter();
+  const { currentUser } = useUser();
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -41,16 +51,22 @@ export default function Notifications() {
                 : "/";
 
             return (
-              <Link
-                href={href}
+              <Button
                 key={notification.id}
-                className={cn(
-                  buttonVariants({ variant: "ghost" }),
-                  "font-normal text-left justify-start h-auto after:content-[''] after:absolute after:left-2 relative after:h-1 after:w-1 after:rounded-full after:bg-red-600"
-                )}
+                onClick={async () => {
+                  if (currentUser) {
+                    const { data, error, count } = await supabase
+                      .from("notifications")
+                      .update({ read: true })
+                      .eq("id", notification.id);
+                    // router.push(href);
+                  }
+                }}
+                variant="ghost"
+                className="font-normal text-left justify-start h-auto after:content-[''] after:absolute after:left-2 relative after:h-1 after:w-1 after:rounded-full after:bg-red-600"
               >
                 {notification.title}
-              </Link>
+              </Button>
             );
           })}
 

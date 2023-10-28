@@ -56,7 +56,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         const { data: notifications } = await supabase
           .from("notifications")
           .select()
-          .eq("user_id", currentUser.id);
+          .eq("user_id", currentUser.id)
+          .eq("read", false);
         if (notifications) {
           setNotifications(notifications);
         }
