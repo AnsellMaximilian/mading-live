@@ -30,10 +30,7 @@ export const UserContextProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     const unsub = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("AUTH STATE CHANGE DETECTED");
       if (session) {
-        console.log("SESSION DETECTED");
-
         const { data: profile } = await supabase
           .from("profiles")
           .select()
@@ -43,8 +40,6 @@ export const UserContextProvider: React.FC<{ children: ReactNode }> = ({
           setCurrentUser({ ...session.user, profile });
         }
       } else {
-        console.log("SESSION MISSING");
-
         setCurrentUser(null);
       }
     });

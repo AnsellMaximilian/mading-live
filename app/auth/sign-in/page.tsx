@@ -26,7 +26,7 @@ export default function SignUpPage() {
     if (res.error) {
       return;
     }
-    router.push("/communities/id/chat");
+    router.push("/communities");
   };
 
   return (

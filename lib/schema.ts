@@ -46,6 +46,7 @@ export interface Database {
           community_id: string
           created_at: string
           id: string
+          pending: boolean
           user_id: string
         }
         Insert: {
@@ -53,6 +54,7 @@ export interface Database {
           community_id: string
           created_at?: string
           id?: string
+          pending?: boolean
           user_id: string
         }
         Update: {
@@ -60,6 +62,7 @@ export interface Database {
           community_id?: string
           created_at?: string
           id?: string
+          pending?: boolean
           user_id?: string
         }
         Relationships: [

@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { UserNav } from "@/components/ui/user-nav";
 import Notifications from "@/components/ui/notifications";
 import { NotificationProvider } from "@/context/NotificationContext";
+import ProfileSidebar from "@/components/ProfileSidebar";
 
 const client = new Realtime.Promise({
   authUrl: "http://localhost:3000/api/ably-auth",
@@ -32,9 +33,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <UserContextProvider>
       <NotificationProvider>
         <AblyProvider client={client}>
-          <div className="flex-col">
+          <div className="flex-col h-screen">
             <div className="flex h-full">
-              {/* <Sidebar /> */}
+              <ProfileSidebar />
               <main className="grow h-full flex flex-col max-h-full">
                 <header className="px-3 py-1 border-b border-border h-[4.5rem] flex items-center">
                   <div className="flex items-center grow">
