@@ -9,8 +9,9 @@ import {
   createClientComponentClient,
   User,
 } from "@supabase/auth-helpers-nextjs";
-import { Community } from "@/lib/types";
+import { Community, CommunityMember } from "@/lib/types";
 import { useParams } from "next/navigation";
+import { Database } from "@/lib/schema";
 
 export interface CommunityContextData {
   community: Community | null;
@@ -28,21 +29,44 @@ export const CommunityContextProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const { id } = useParams();
+  const supabase = createClientComponentClient<Database>();
+  const [loading, setLoading] = useState(false);
 
   const [community, setCommunity] = useState<Community | null>(null);
-  const [loading, setLoading] = useState(true);
-  const supabase = createClientComponentClient();
+  const [members, setMembers] = useState<CommunityMember[]>([]);
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from("communities").select().eq("id", id);
-      if (data && data.length > 0) {
-        setCommunity(data[0]);
-      } else {
-        setCommunity(null);
+      setLoading(true);
+      const { data: community, error } = await supabase
+        .from("communities")
+        .select("*, community_members(*)")
+        .eq("id", id)
+        .single();
+
+      if (community) {
+        const { data: members } = await supabase
+          .from("profiles")
+          .select()
+          .in(
+            "id",
+            community.community_members.map((membership) => membership.user_id)
+          );
+        if (members) {
+          setCommunity({
+            ...community,
+            members: members.map((m) => ({
+              ...m,
+              is_admin: !!community.community_members.find(
+                (cm) => cm.user_id === m.id
+              )?.is_admin,
+            })),
+          });
+        }
       }
+      setLoading(false);
     })();
-  }, []);
+  }, [id, supabase]);
 
   return (
     <CommunityContext.Provider

@@ -9,14 +9,15 @@ export type Message = {
   userId: string;
 };
 
-export type Community = {
-  id: string;
-  name: string;
-  description: string | null;
-  owner_id: string | null;
-  created_at: string;
+export type Community = Database["public"]["Tables"]["communities"]["Row"] & {
+  members: CommunityMember[];
 };
 
 export type UserWithProfile = User & {
   profile: Database["public"]["Tables"]["profiles"]["Row"];
 };
+
+export type CommunityMember =
+  Database["public"]["Tables"]["profiles"]["Row"] & {
+    is_admin: boolean;
+  };

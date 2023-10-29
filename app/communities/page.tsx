@@ -55,7 +55,9 @@ export default function CommunitiesPage() {
   const [isCreateLoading, setIsCreateLoading] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const [communities, setCommunities] = useState<Community[]>([]);
+  const [communities, setCommunities] = useState<
+    Database["public"]["Tables"]["communities"]["Row"][]
+  >([]);
 
   const { currentUser } = useUser();
   const router = useRouter();
@@ -124,6 +126,13 @@ export default function CommunitiesPage() {
       </header>
       {!isLoading && communities.length > 0 && (
         <div className="p-4">
+          <div className="flex justify-between mb-6">
+            <h2 className="text-3xl font-bold tracking-tight">
+              Your Communities
+            </h2>
+            <Button>Create New</Button>
+          </div>
+
           <div className="grid gap-2 grid-cols-12">
             {communities.map((community) => (
               <div

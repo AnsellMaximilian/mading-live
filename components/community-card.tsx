@@ -10,9 +10,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
+import { Database } from "@/lib/schema";
 
 type Props = {
-  community: Community;
+  community: Database["public"]["Tables"]["communities"]["Row"];
 };
 
 export default function CommunityCard({ community }: Props) {

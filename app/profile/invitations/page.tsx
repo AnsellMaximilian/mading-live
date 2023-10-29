@@ -4,6 +4,8 @@ import { useUser } from "@/context/UserContext";
 import { Database } from "@/lib/schema";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Loader2 } from "lucide-react";
+import { AblyProvider, useChannel, usePresence, useAbly } from "ably/react";
+
 import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,7 +38,13 @@ export default function UserInvitationsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isResponseLoading, setIsResponseLoading] = useState(false);
 
-  const handleRespond = async (invitation_id: string, response: boolean) => {
+  const ablyClient = useAbly();
+
+  const handleRespond = async (
+    invitation_id: string,
+    response: boolean,
+    community_id: string
+  ) => {
     setIsResponseLoading(true);
     const { error } = await supabase
       .from("community_invitations")
@@ -44,6 +52,31 @@ export default function UserInvitationsPage() {
       .eq("id", invitation_id);
     if (!error) {
       setInvitations((prev) => prev.filter((inv) => inv.id != invitation_id));
+
+      const { data: members } = await supabase
+        .from("community_members")
+        .select()
+        .eq("community_id", community_id)
+        .neq("user_id", currentUser?.id);
+
+      if (members) {
+        const notifications: Database["public"]["Tables"]["notifications"]["Insert"][] =
+          members.map((m) => ({
+            user_id: m.user_id,
+            title: "Someone jsut joined our community",
+            community_id,
+            type: "info",
+            content_id: community_id,
+            description: "",
+            read: false,
+          }));
+        notifications.forEach((not) => {
+          const notificationChannel = ablyClient.channels.get(
+            `notifications:${not.user_id}`
+          );
+          notificationChannel.publish("add", not);
+        });
+      }
     }
     setIsResponseLoading(false);
   };
@@ -62,7 +95,7 @@ export default function UserInvitationsPage() {
         setIsLoading(false);
       }
     })();
-  }, [currentUser]);
+  }, [currentUser, supabase]);
 
   return (
     <div className="h-[calc(100vh-4.5rem)] flex flex-col overflow-y-auto">
@@ -98,7 +131,13 @@ export default function UserInvitationsPage() {
                         <Button
                           disabled={isResponseLoading}
                           variant="outline"
-                          onClick={() => handleRespond(invitation.id, false)}
+                          onClick={() =>
+                            handleRespond(
+                              invitation.id,
+                              false,
+                              invitation.community_id
+                            )
+                          }
                         >
                           {isResponseLoading && (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -107,7 +146,13 @@ export default function UserInvitationsPage() {
                         </Button>
                         <Button
                           disabled={isResponseLoading}
-                          onClick={() => handleRespond(invitation.id, true)}
+                          onClick={() =>
+                            handleRespond(
+                              invitation.id,
+                              true,
+                              invitation.community_id
+                            )
+                          }
                         >
                           {isResponseLoading && (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

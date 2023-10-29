@@ -14,10 +14,10 @@ const client = new Realtime.Promise({
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <UserContextProvider>
-      <NotificationProvider>
-        <AblyProvider client={client}>{children}</AblyProvider>
-      </NotificationProvider>
-    </UserContextProvider>
+    <AblyProvider client={client}>
+      <UserContextProvider>
+        <NotificationProvider>{children}</NotificationProvider>
+      </UserContextProvider>
+    </AblyProvider>
   );
 }

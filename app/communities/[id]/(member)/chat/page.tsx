@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { useChannel } from "ably/react";
+import { useChannel, useAbly } from "ably/react";
 import type { Types } from "ably";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,6 +43,8 @@ export default function ChatPage() {
 
   const { community } = useCommunity();
 
+  const ablyClient = useAbly();
+
   const { channel: messagesChannel, channelError } = useChannel(
     "messages",
     (ablyMessage: Types.Message) => {
@@ -58,11 +60,7 @@ export default function ChatPage() {
     },
   });
 
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     if (currentUser) {
       const message: Message = {
         id: uuidv4(),
@@ -72,6 +70,15 @@ export default function ChatPage() {
         userId: currentUser.id,
       };
       messagesChannel.publish("messages", message);
+
+      const notificationChannel = ablyClient.channels.get("messages");
+      notificationChannel.publish("messages", {
+        id: uuidv4(),
+        username: currentUser.email || "ANON",
+        content: values.message,
+        time: moment().format("HH:MM"),
+        userId: currentUser.id,
+      });
     }
 
     form.reset({ message: "" });

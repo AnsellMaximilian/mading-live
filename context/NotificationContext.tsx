@@ -8,16 +8,14 @@ import React, {
   useState,
 } from "react";
 import { useUser } from "./UserContext";
+import { useChannel, useAbly } from "ably/react";
+import { Types } from "ably";
 
 interface NotificationContextData {
-  showNotification: (message: string) => void;
-  hideNotification: () => void;
   notifications: Database["public"]["Tables"]["notifications"]["Row"][];
 }
 
 export const NotificationContext = createContext<NotificationContextData>({
-  showNotification: () => {},
-  hideNotification: () => {},
   notifications: [],
 });
 
@@ -34,21 +32,16 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   >([]);
   const supabase = createClientComponentClient<Database>();
   const { currentUser } = useUser();
-
-  const showNotification = (message: string) => {
-    setNotification(message);
-  };
-
-  const hideNotification = () => {
-    setNotification(null);
-  };
-
-  // useEffect(() => {
-  //   if (notification) {
-  //     const timer = setTimeout(hideNotification, 4000);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [notification]);
+  const { channel: messagesChannel, channelError } = useChannel(
+    `notifications:${currentUser?.id}`,
+    (ablyMessage: Types.Message) => {
+      if (ablyMessage.name === "add") {
+        const notification: Database["public"]["Tables"]["notifications"]["Row"] =
+          ablyMessage.data;
+        setNotifications((prev) => [...prev, notification]);
+      }
+    }
+  );
 
   useEffect(() => {
     (async () => {
@@ -66,9 +59,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   }, [currentUser]);
 
   return (
-    <NotificationContext.Provider
-      value={{ showNotification, hideNotification, notifications }}
-    >
+    <NotificationContext.Provider value={{ notifications }}>
       {children}
     </NotificationContext.Provider>
   );

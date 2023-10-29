@@ -50,7 +50,7 @@ export default function InvitationPage() {
         setIsLoading(false);
       }
     })();
-  }, [currentUser]);
+  }, [currentUser, supabase, id]);
 
   return (
     <div className="h-screen flex items-center justify-center bg-secondary">

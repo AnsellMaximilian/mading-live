@@ -30,9 +30,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const supabase = createClientComponentClient<Database>();
 
   return (
-    <UserContextProvider>
-      <NotificationProvider>
-        <AblyProvider client={client}>
+    <AblyProvider client={client}>
+      <UserContextProvider>
+        <NotificationProvider>
           <div className="flex-col h-screen">
             <div className="flex h-full">
               <ProfileSidebar />
@@ -49,8 +49,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </main>
             </div>
           </div>
-        </AblyProvider>
-      </NotificationProvider>
-    </UserContextProvider>
+        </NotificationProvider>
+      </UserContextProvider>
+    </AblyProvider>
   );
 }
