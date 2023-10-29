@@ -39,6 +39,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bell, CheckIcon } from "lucide-react";
 import { UserNav } from "@/components/ui/user-nav";
@@ -84,7 +94,7 @@ export default function CommunitiesPage() {
         setIsLoading(false);
       }
     })();
-  }, [currentUser]);
+  }, [currentUser, supabase]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (currentUser) {
@@ -124,38 +134,27 @@ export default function CommunitiesPage() {
           </div>
         </div>
       </header>
-      {!isLoading && communities.length > 0 && (
-        <div className="p-4">
-          <div className="flex justify-between mb-6">
-            <h2 className="text-3xl font-bold tracking-tight">
-              Your Communities
-            </h2>
-            <Button>Create New</Button>
-          </div>
-
-          <div className="grid gap-2 grid-cols-12">
-            {communities.map((community) => (
-              <div
-                key={community.id}
-                className="col-span-12 md:col-span-6 lg:col-span-4"
-              >
-                <CommunityCard community={community} />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {!isLoading && communities.length <= 0 && (
-        <div className="grow flex items-center justify-center bg-secondary">
-          <Card className="w-[350px]">
-            <CardHeader>
-              <CardTitle>Create community</CardTitle>
-              <CardDescription>Create your first community.</CardDescription>
-            </CardHeader>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)}>
-                <CardContent>
+      <div className="p-4">
+        <div className="flex justify-between mb-6">
+          <h2 className="text-3xl font-bold tracking-tight">
+            Your Communities
+          </h2>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>Create New</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Create community</DialogTitle>
+                <DialogDescription>
+                  Create your first community.
+                </DialogDescription>
+              </DialogHeader>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  id="community-form"
+                >
                   <div className="grid gap-2">
                     <div className="grid w-full items-center gap-4">
                       <div className="flex flex-col space-y-1.5">
@@ -183,7 +182,7 @@ export default function CommunitiesPage() {
                           name="description"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Name</FormLabel>
+                              <FormLabel>Description</FormLabel>
                               <FormControl>
                                 <Textarea
                                   placeholder="Community description."
@@ -197,21 +196,41 @@ export default function CommunitiesPage() {
                       </div>
                     </div>
                   </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
+                </form>
+              </Form>
+              <DialogFooter className="">
+                <DialogClose asChild>
                   <Button variant="outline">Cancel</Button>
-                  <Button disabled={isCreateLoading}>
-                    {isCreateLoading && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    Create
-                  </Button>
-                </CardFooter>
-              </form>
-            </Form>
-          </Card>
+                </DialogClose>
+                <Button
+                  disabled={isCreateLoading}
+                  type="submit"
+                  form="community-form"
+                >
+                  {isCreateLoading && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Create
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
-      )}
+        {communities.length > 0 ? (
+          <div className="grid gap-2 grid-cols-12">
+            {communities.map((community) => (
+              <div
+                key={community.id}
+                className="col-span-12 md:col-span-6 lg:col-span-4"
+              >
+                <CommunityCard community={community} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div>You do not belong to any communities.</div>
+        )}
+      </div>
     </div>
   );
 }
