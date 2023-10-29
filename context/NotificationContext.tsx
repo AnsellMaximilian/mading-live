@@ -39,6 +39,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         const notification: Database["public"]["Tables"]["notifications"]["Row"] =
           ablyMessage.data;
         setNotifications((prev) => [...prev, notification]);
+      } else if (ablyMessage.name === "remove") {
+        setNotifications((prev) =>
+          prev.filter((not) => not.id !== ablyMessage.data)
+        );
       }
     }
   );
@@ -56,7 +60,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         }
       }
     })();
-  }, [currentUser]);
+  }, [currentUser, supabase]);
 
   return (
     <NotificationContext.Provider value={{ notifications }}>
