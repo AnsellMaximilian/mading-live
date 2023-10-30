@@ -27,6 +27,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Message } from "@/lib/types";
 import { useUser } from "@/context/UserContext";
 import { useCommunity } from "@/context/CommunityContext";
+import { Database } from "@/lib/schema";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 const formSchema = z.object({
   message: z.string().min(2, {
@@ -45,11 +47,15 @@ export default function ChatPage() {
 
   const ablyClient = useAbly();
 
+  const supabase = createClientComponentClient<Database>();
+
   const { channel: messagesChannel, channelError } = useChannel(
-    "messages",
+    `messages:${community?.id}`,
     (ablyMessage: Types.Message) => {
-      const message: Message = ablyMessage.data;
-      setMessages((prev) => [...prev, message]);
+      if (ablyMessage.name === "add") {
+        const message: Message = ablyMessage.data;
+        setMessages((prev) => [...prev, message]);
+      }
     }
   );
 
@@ -61,7 +67,7 @@ export default function ChatPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (currentUser) {
+    if (currentUser && community) {
       const message: Message = {
         id: uuidv4(),
         username: currentUser.email || "ANON",
@@ -69,16 +75,14 @@ export default function ChatPage() {
         time: moment().format("HH:MM"),
         userId: currentUser.id,
       };
-      messagesChannel.publish("messages", message);
 
-      const notificationChannel = ablyClient.channels.get("messages");
-      notificationChannel.publish("messages", {
-        id: uuidv4(),
-        username: currentUser.email || "ANON",
+      const { data } = await supabase.from("chat_messages").insert({
         content: values.message,
-        time: moment().format("HH:MM"),
-        userId: currentUser.id,
+        user_id: currentUser.id,
+        community_id: community.id,
       });
+
+      messagesChannel.publish("add", message);
     }
 
     form.reset({ message: "" });

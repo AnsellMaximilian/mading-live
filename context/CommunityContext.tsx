@@ -17,12 +17,14 @@ export interface CommunityContextData {
   community: Community | null;
   loading: boolean;
   setCommunity: (community: Community | null) => void;
+  invitations: Database["public"]["Tables"]["community_invitations"]["Row"][];
 }
 
 export const CommunityContext = createContext<CommunityContextData>({
   community: null,
   loading: true,
   setCommunity: () => {},
+  invitations: [],
 });
 
 export const CommunityContextProvider: React.FC<{ children: ReactNode }> = ({
@@ -33,7 +35,9 @@ export const CommunityContextProvider: React.FC<{ children: ReactNode }> = ({
   const [loading, setLoading] = useState(false);
 
   const [community, setCommunity] = useState<Community | null>(null);
-  const [members, setMembers] = useState<CommunityMember[]>([]);
+  const [invitations, setInvitations] = useState<
+    Database["public"]["Tables"]["community_invitations"]["Row"][]
+  >([]);
 
   useEffect(() => {
     (async () => {
@@ -68,12 +72,26 @@ export const CommunityContextProvider: React.FC<{ children: ReactNode }> = ({
     })();
   }, [id, supabase]);
 
+  useEffect(() => {
+    (async () => {
+      if (community) {
+        const { data: invitations } = await supabase
+          .from("community_invitations")
+          .select()
+          .eq("community_id", community.id);
+
+        if (invitations) setInvitations(invitations);
+      }
+    })();
+  }, [community, supabase]);
+
   return (
     <CommunityContext.Provider
       value={{
         community,
         loading,
         setCommunity,
+        invitations,
       }}
     >
       {children}

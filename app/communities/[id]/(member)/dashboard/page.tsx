@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useChannel } from "ably/react";
 import type { Types } from "ably";
-import { Plus, Users, Loader2 } from "lucide-react";
+import { Plus, Users, Loader2, MailWarning } from "lucide-react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -19,6 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/use-toast";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -56,8 +57,9 @@ const formSchema = z.object({
 
 export default function DashboardPage() {
   const { currentUser } = useUser();
+  const { toast } = useToast();
 
-  const { community } = useCommunity();
+  const { community, invitations } = useCommunity();
   const supabase = createClientComponentClient<Database>();
 
   const [isInviteLoading, setIsInviteLoading] = useState(false);
@@ -97,6 +99,11 @@ export default function DashboardPage() {
             })
             .select()
             .single();
+
+          toast({
+            title: `Invitation sent!`,
+            description: `Invitation sent to user with email ${values.email}`,
+          });
         }
       }
       setIsInviteLoading(false);
@@ -183,7 +190,9 @@ export default function DashboardPage() {
                   <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">333</div>
+                  <div className="text-2xl font-bold">
+                    {community?.members.length}
+                  </div>
                   <p className="text-xs text-muted-foreground">
                     Members have joined.
                   </p>
@@ -192,33 +201,24 @@ export default function DashboardPage() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Subscriptions
+                    Pending Invites
                   </CardTitle>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    className="h-4 w-4 text-muted-foreground"
-                  >
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                    <circle cx="9" cy="7" r="4" />
-                    <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-                  </svg>
+                  <MailWarning className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">+2350</div>
+                  <div className="text-2xl font-bold">
+                    {invitations.filter((inv) => inv.accepted === null).length}
+                  </div>
                   <p className="text-xs text-muted-foreground">
-                    +180.1% from last month
+                    Invites waiting for response.
                   </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Sales</CardTitle>
+                  <CardTitle className="text-sm font-medium">
+                    Online Now
+                  </CardTitle>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
