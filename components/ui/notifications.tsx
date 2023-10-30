@@ -57,11 +57,6 @@ export default function Notifications() {
             <div className="p-4 text-sm">No notifications.</div>
           )}
           {notifications.map((notification) => {
-            const href =
-              notification.type === "community_invitation"
-                ? `/communities/${notification.community_id}/invitation`
-                : "/";
-
             return (
               <Button
                 key={notification.id}
@@ -76,8 +71,9 @@ export default function Notifications() {
                       `notifications:${currentUser.id}`
                     );
                     notificationChannel.publish("remove", notification.id);
-
-                    // router.push(href);
+                    if (notification.type === "community_invitation") {
+                      router.push("/profile/invitations");
+                    }
                   }
                 }}
                 variant="ghost"

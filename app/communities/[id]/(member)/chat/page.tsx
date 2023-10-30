@@ -37,7 +37,9 @@ const formSchema = z.object({
 });
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<
+    Database["public"]["Tables"]["chat_messages"]["Row"][]
+  >([]);
 
   const { currentUser } = useUser();
 
@@ -53,7 +55,8 @@ export default function ChatPage() {
     `messages:${community?.id}`,
     (ablyMessage: Types.Message) => {
       if (ablyMessage.name === "add") {
-        const message: Message = ablyMessage.data;
+        const message: Database["public"]["Tables"]["chat_messages"]["Row"] =
+          ablyMessage.data;
         setMessages((prev) => [...prev, message]);
       }
     }
@@ -68,25 +71,39 @@ export default function ChatPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (currentUser && community) {
-      const message: Message = {
-        id: uuidv4(),
-        username: currentUser.email || "ANON",
-        content: values.message,
-        time: moment().format("HH:MM"),
-        userId: currentUser.id,
-      };
-
-      const { data } = await supabase.from("chat_messages").insert({
-        content: values.message,
-        user_id: currentUser.id,
-        community_id: community.id,
-      });
+      const createdMessage: Database["public"]["Tables"]["chat_messages"]["Insert"] =
+        {
+          content: values.message,
+          user_id: currentUser.id,
+          community_id: community.id,
+          sender_username: currentUser.profile.username,
+        };
+      const { data: message } = await supabase
+        .from("chat_messages")
+        .insert(createdMessage)
+        .select()
+        .single();
 
       messagesChannel.publish("add", message);
     }
 
     form.reset({ message: "" });
   }
+
+  useEffect(() => {
+    (async () => {
+      if (community) {
+        const { data: messages } = await supabase
+          .from("chat_messages")
+          .select("*")
+          .eq("community_id", community.id);
+
+        if (messages) {
+          setMessages(messages);
+        }
+      }
+    })();
+  }, [supabase, community]);
 
   useEffect(() => {
     if (chatBottomRef.current) {
@@ -101,7 +118,7 @@ export default function ChatPage() {
             <ChatMessage
               key={message.id}
               message={message}
-              isCurrentUser={currentUser?.id === message.userId}
+              isCurrentUser={currentUser?.id === message.user_id}
             />
           ))}
         </div>

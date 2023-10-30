@@ -25,6 +25,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
 
 type Invitations =
   (Database["public"]["Tables"]["community_invitations"]["Row"] & {
@@ -37,6 +38,8 @@ export default function UserInvitationsPage() {
   const [invitations, setInvitations] = useState<Invitations>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isResponseLoading, setIsResponseLoading] = useState(false);
+
+  const router = useRouter();
 
   const ablyClient = useAbly();
 
@@ -53,29 +56,34 @@ export default function UserInvitationsPage() {
     if (!error) {
       setInvitations((prev) => prev.filter((inv) => inv.id != invitation_id));
 
-      const { data: members } = await supabase
-        .from("community_members")
-        .select()
-        .eq("community_id", community_id)
-        .neq("user_id", currentUser?.id);
+      if (response) {
+        const { data: members } = await supabase
+          .from("community_members")
+          .select()
+          .eq("community_id", community_id)
+          .neq("user_id", currentUser?.id);
 
-      if (members) {
-        const notifications: Database["public"]["Tables"]["notifications"]["Insert"][] =
-          members.map((m) => ({
-            user_id: m.user_id,
-            title: "Someone jsut joined our community",
-            community_id,
-            type: "info",
-            content_id: community_id,
-            description: "",
-            read: false,
-          }));
-        notifications.forEach((not) => {
-          const notificationChannel = ablyClient.channels.get(
-            `notifications:${not.user_id}`
-          );
-          notificationChannel.publish("add", not);
-        });
+        if (members) {
+          const notifications: Database["public"]["Tables"]["notifications"]["Insert"][] =
+            members.map((m) => ({
+              user_id: m.user_id,
+              title: "Someone jsut joined our community",
+              community_id,
+              type: "info",
+              content_id: community_id,
+              description: "",
+              read: false,
+            }));
+
+          const {} = await supabase.from("notifications").insert(notifications);
+          notifications.forEach((not) => {
+            const notificationChannel = ablyClient.channels.get(
+              `notifications:${not.user_id}`
+            );
+            notificationChannel.publish("add", not);
+          });
+          router.push(`/communities/${community_id}`);
+        }
       }
     }
     setIsResponseLoading(false);
