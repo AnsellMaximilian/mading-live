@@ -19,7 +19,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <AblyProvider client={client}>
       <SpacesProvider client={spaces}>
-        <SpaceProvider name={`mading-live`}>
+        <SpaceProvider name={`mading-live-app`}>
           <UserContextProvider>
             <NotificationProvider>{children}</NotificationProvider>
           </UserContextProvider>

@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { useUser } from "./UserContext";
@@ -32,9 +33,15 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   >([]);
   const supabase = createClientComponentClient<Database>();
   const { currentUser } = useUser();
-  const { channel: messagesChannel, channelError } = useChannel(
-    `notifications:${currentUser?.id}`,
-    (ablyMessage: Types.Message) => {
+
+  const ablyClient = useAbly();
+
+  const notificationsChannel = useMemo(() => {
+    return ablyClient.channels.get(`notifications:${currentUser?.id}`);
+  }, [ablyClient.channels, currentUser]);
+
+  useEffect(() => {
+    notificationsChannel.subscribe((ablyMessage: Types.Message) => {
       if (ablyMessage.name === "add") {
         const notification: Database["public"]["Tables"]["notifications"]["Row"] =
           ablyMessage.data;
@@ -44,8 +51,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
           prev.filter((not) => not.id !== ablyMessage.data)
         );
       }
-    }
-  );
+    });
+
+    return () => {
+      notificationsChannel.unsubscribe(console.log);
+    };
+  }, [notificationsChannel]);
 
   useEffect(() => {
     (async () => {

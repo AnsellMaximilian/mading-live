@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useChannel, useAbly } from "ably/react";
 import type { Types } from "ably";
@@ -51,16 +51,23 @@ export default function ChatPage() {
 
   const supabase = createClientComponentClient<Database>();
 
-  const { channel: messagesChannel, channelError } = useChannel(
-    `messages:${community?.id}`,
-    (ablyMessage: Types.Message) => {
+  const chatChannel = useMemo(() => {
+    return ablyClient.channels.get(`messages:${community?.id}`);
+  }, [community, ablyClient.channels]);
+
+  useEffect(() => {
+    chatChannel.subscribe((ablyMessage: Types.Message) => {
       if (ablyMessage.name === "add") {
         const message: Database["public"]["Tables"]["chat_messages"]["Row"] =
           ablyMessage.data;
         setMessages((prev) => [...prev, message]);
       }
-    }
-  );
+    });
+
+    return () => {
+      chatChannel.unsubscribe(console.log);
+    };
+  }, [chatChannel]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -84,7 +91,7 @@ export default function ChatPage() {
         .select()
         .single();
 
-      messagesChannel.publish("add", message);
+      chatChannel.publish("add", message);
     }
 
     form.reset({ message: "" });
