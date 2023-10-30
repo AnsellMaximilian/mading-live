@@ -1,5 +1,6 @@
 import type { User } from "@supabase/auth-helpers-nextjs";
 import { Database } from "./schema";
+import { SpaceMember as AblySpaceMember } from "@ably/spaces";
 
 export type Message = {
   id: string;
@@ -7,6 +8,10 @@ export type Message = {
   content: string;
   time: string;
   userId: string;
+};
+
+export type SpaceMember = Omit<AblySpaceMember, "profileData"> & {
+  profile: UserWithProfile;
 };
 
 export type Community = Database["public"]["Tables"]["communities"]["Row"] & {

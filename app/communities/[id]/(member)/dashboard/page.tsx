@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useChannel } from "ably/react";
 import type { Types } from "ably";
-import { Plus, Users, Loader2, MailWarning } from "lucide-react";
+import { Plus, Users, Loader2, MailWarning, Wifi } from "lucide-react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -19,6 +19,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
 import { useToast } from "@/components/ui/use-toast";
 
 import { Button } from "@/components/ui/button";
@@ -48,6 +58,9 @@ import {
 } from "@/components/ui/card";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/lib/schema";
+import { Badge } from "@/components/ui/badge";
+import CommunityMembersList from "@/components/community-members-list";
+import { useSpace, useMembers } from "@ably/spaces/react";
 
 const formSchema = z.object({
   email: z.string().min(2, {
@@ -69,6 +82,12 @@ export default function DashboardPage() {
       email: "",
     },
   });
+
+  const { space } = useSpace((update) => {
+    // console.log(update);
+  });
+
+  const { members } = useMembers();
 
   async function sendInvite(values: z.infer<typeof formSchema>) {
     if (currentUser) {
@@ -219,24 +238,14 @@ export default function DashboardPage() {
                   <CardTitle className="text-sm font-medium">
                     Online Now
                   </CardTitle>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    className="h-4 w-4 text-muted-foreground"
-                  >
-                    <rect width="20" height="14" x="2" y="5" rx="2" />
-                    <path d="M2 10h20" />
-                  </svg>
+                  <Wifi className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">+12,234</div>
+                  <div className="text-2xl font-bold">
+                    {members?.filter((m) => m.isConnected).length}
+                  </div>
                   <p className="text-xs text-muted-foreground">
-                    +19% from last month
+                    Members who are live
                   </p>
                 </CardContent>
               </Card>
@@ -281,6 +290,19 @@ export default function DashboardPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>Recent Sales</CardContent>
+              </Card>
+            </div>
+            <div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Members</CardTitle>
+                  <CardDescription>
+                    Your fellow community members.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {community && <CommunityMembersList community={community} />}
+                </CardContent>
               </Card>
             </div>
           </div>

@@ -76,6 +76,24 @@ export default function ProfileSidebar({ className }: SidebarProps) {
               </Button>
             </ActiveLink>
             <ActiveLink
+              href={`/communities`}
+              className="block rounded-md"
+              activeClass="bg-accent text-accent-foreground"
+            >
+              <Button
+                variant="ghost"
+                className="flex w-full justify-start py-4 h-auto"
+              >
+                <Users size={24} className="mr-2" />
+                <div className="hidden md:flex flex-col items-start">
+                  <span>Communities</span>
+                  <span className="text-xs text-muted-foreground hidden 2xl:block text-left">
+                    View pending invitations.
+                  </span>
+                </div>
+              </Button>
+            </ActiveLink>
+            <ActiveLink
               href={`/profile/invitations`}
               className="block rounded-md"
               activeClass="bg-accent text-accent-foreground"

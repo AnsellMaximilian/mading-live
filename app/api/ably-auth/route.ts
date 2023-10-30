@@ -8,7 +8,7 @@ const client = new Ably.Rest({
 export async function GET(request: Request) {
   const tokenParams: Types.TokenParams = {
     clientId: `mading-live`,
-    capability: { "*": ["publish", "subscribe"] },
+    capability: { "*": ["publish", "subscribe", "presence"] },
   };
 
   return new Promise((resolve) => {

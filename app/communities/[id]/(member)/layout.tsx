@@ -3,9 +3,9 @@
 import Sidebar from "@/components/Sidebar";
 import React, { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { AblyProvider, useChannel, usePresence } from "ably/react";
+import { AblyProvider, useChannel, usePresence, useAbly } from "ably/react";
 import { Realtime } from "ably";
-import { UserContextProvider } from "@/context/UserContext";
+import { UserContextProvider, useUser } from "@/context/UserContext";
 import {
   CommunityContext,
   CommunityContextProvider,
@@ -19,8 +19,24 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { UserNav } from "@/components/ui/user-nav";
 import Notifications from "@/components/ui/notifications";
+import Spaces from "@ably/spaces";
+import { SpaceProvider } from "@ably/spaces/dist/mjs/react";
+import { useSpace, useMembers } from "@ably/spaces/react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const { id } = useParams();
+  const { space } = useSpace((update) => {
+    // console.log(update);
+  });
+
+  const { currentUser } = useUser();
+
+  useEffect(() => {
+    if (space && currentUser) {
+      space.enter({ ...currentUser });
+    }
+  }, [space, currentUser]);
+
   return (
     <CommunityContextProvider>
       <div className="flex-col">
