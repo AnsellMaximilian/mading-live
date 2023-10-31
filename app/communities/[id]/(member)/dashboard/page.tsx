@@ -132,7 +132,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="p-4">
+    <div className="h-[calc(100vh-4.5rem)] flex flex-col p-4 overflow-auto">
       <div className="flex-col md:flex">
         <div className="flex-1 space-y-4">
           <div className="flex items-center justify-between space-y-2">
@@ -242,7 +242,15 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {members?.filter((m) => m.isConnected).length}
+                    {
+                      members?.filter(
+                        (m) =>
+                          m.isConnected &&
+                          community?.members.some(
+                            (cm) => cm.id === m.profileData?.id
+                          )
+                      ).length
+                    }
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Members who are live
@@ -273,23 +281,6 @@ export default function DashboardPage() {
                     +201 since last hour
                   </p>
                 </CardContent>
-              </Card>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-              <Card className="col-span-4">
-                <CardHeader>
-                  <CardTitle>Overview</CardTitle>
-                </CardHeader>
-                <CardContent className="pl-2">Overview</CardContent>
-              </Card>
-              <Card className="col-span-3">
-                <CardHeader>
-                  <CardTitle>Recent Sales</CardTitle>
-                  <CardDescription>
-                    You made 265 sales this month.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>Recent Sales</CardContent>
               </Card>
             </div>
             <div>

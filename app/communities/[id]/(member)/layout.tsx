@@ -42,7 +42,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="flex-col">
         <div className="flex h-full">
           <Sidebar />
-          <main className="grow h-full flex flex-col max-h-full">
+          <main className="grow h-full flex flex-col max-h-full overflow-x-hidden">
             <header className="px-3 py-1 border-b border-border h-[4.5rem] flex items-center">
               <div className="flex items-center grow">
                 <div className="ml-auto flex items-center gap-2">
