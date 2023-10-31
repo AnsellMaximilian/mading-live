@@ -81,11 +81,11 @@ export default async function Home() {
                   <Badge>Made with Ably</Badge>
                 </a>
               </div>
-              <h1 className="text-5xl font-semibold tracking-tight">
+              <h1 className="text-3xl md:text-5xl font-semibold tracking-tight">
                 Unite, Communicate, and Collaborate in{" "}
                 <span className="text-orange-600 font-bold">Real Time</span>
               </h1>
-              <div className="text-3xl tracking-tighter text-secondary-foreground">
+              <div className="text-xl md:text-3xl tracking-tighter text-secondary-foreground">
                 Empower Your Community with Real-Time Social Interaction
               </div>
               <Link href="/communities" className={cn(buttonVariants({}))}>
@@ -98,14 +98,14 @@ export default async function Home() {
               <Image src={dashboard} alt="screenshot" className="w-full" />
             </div>
             <div>
-              <h2 className="text-4xl font-semibold tracking-tight text-center">
+              <h2 className="text-2xl md:text-4xl font-semibold tracking-tight text-center">
                 Real Time Community Dashboards
               </h2>
-              <p className="text-center text-muted-foreground mt-4 text-xl">
+              <p className="text-center text-muted-foreground mt-4 text-lg md:text-xl">
                 View and manage community and members data live
               </p>
 
-              <div className="mt-4 text-xl text-center tracking-tight">
+              <div className="mt-4 text-lg md:text-xl text-center tracking-tight">
                 Using Ably&apos;s Space feature along with its pub/sub
                 connections, you can monitor your community data in real time.
                 See how many members are online and know exacly who are!
@@ -118,26 +118,26 @@ export default async function Home() {
           </div>
           <div className="mt-32">
             <div>
-              <h2 className="text-4xl font-semibold tracking-tight text-center">
+              <h2 className="text-2xl md:text-4xl font-semibold tracking-tight text-center">
                 Take Advantage of Other Live Features
               </h2>
-              <p className="text-center text-muted-foreground mt-4 text-xl">
+              <p className="text-center text-muted-foreground mt-4 text-lg md:text-xl">
                 Experience real time social interaction with Ably
               </p>
             </div>
-            <div className="space-y-10 mt-16">
+            <div className="space-y-16 md:space-y-10 mt-16">
               <div>
-                <div className="grid grid-cols-12 gap-8">
+                <div className="grid grid-cols-12 md:gap-8 row-span-2 md:row-span-1">
                   <Image
                     src={chat}
-                    className="border-4 border-border rounded-md overflow-hidden col-span-7"
+                    className="border-4 border-border rounded-md overflow-hidden col-span-12 md:col-span-7"
                     alt="chat screenshot"
                   />
-                  <div className="col-span-5">
-                    <h3 className="tracking-tight text-2xl font-medium mb-4">
+                  <div className="col-span-12 md:col-span-5 mt-4 md:mt-0">
+                    <h3 className="tracking-tight text-xl md:text-2xl text-center md:text-left font-medium mb-2 md:mb-4">
                       Chat with community members in real time
                     </h3>
-                    <p className="text-xl">
+                    <p className="text-lg md:text-xl text-center md:text-left">
                       Communicate within your communities live. Using Ably&apos;
                       pub/sub features, you will be able to chat with your
                       fellow community-mates in real time. Send and respond to
@@ -147,12 +147,12 @@ export default async function Home() {
                 </div>
               </div>
               <div>
-                <div className="grid grid-cols-12 gap-8">
-                  <div className="col-span-5">
-                    <h3 className="tracking-tight text-2xl font-medium mb-4">
+                <div className="grid grid-cols-12 md:gap-8 row-span-2 md:row-span-1">
+                  <div className="col-span-12 md:col-span-5 mt-4 md:mt-0 row-start-2 md:row-start-1">
+                    <h3 className="tracking-tight text-xl md:text-2xl text-center md:text-left font-medium mb-2 md:mb-4">
                       Take surveys and get real time answers and results
                     </h3>
-                    <p className="text-xl">
+                    <p className="text-lg md:text-xl text-center md:text-left">
                       Need to gauge community opinions or take a vote? Visit
                       your community&apos;s survey tab. Create a survey,
                       establish choices, and watch your community answer in real
@@ -161,23 +161,23 @@ export default async function Home() {
                   </div>
                   <Image
                     src={surveys}
-                    className="border-4 border-border rounded-md overflow-hidden col-span-7"
+                    className="border-4 border-border rounded-md overflow-hidden col-span-12 md:col-span-7 row-start-1"
                     alt="chat screenshot"
                   />
                 </div>
               </div>
               <div>
-                <div className="grid grid-cols-12 gap-8">
+                <div className="grid grid-cols-12 md:gap-8 row-span-2 md:row-span-1">
                   <Image
                     src={posts}
-                    className="border-4 border-border rounded-md overflow-hidden col-span-7"
+                    className="border-4 border-border rounded-md overflow-hidden col-span-12 md:col-span-7"
                     alt="chat screenshot"
                   />
-                  <div className="col-span-5">
-                    <h3 className="tracking-tight text-2xl font-medium mb-4">
+                  <div className="col-span-12 md:col-span-5 mt-4 md:mt-0">
+                    <h3 className="tracking-tight text-xl md:text-2xl text-center md:text-left font-medium mb-2 md:mb-4">
                       Post and share things to your community
                     </h3>
-                    <p className="text-xl">
+                    <p className="text-lg md:text-xl text-center md:text-left">
                       Share stories, announcements, and other things within your
                       communities. Get notified whenever a community-mate shares
                       something.
@@ -192,9 +192,13 @@ export default async function Home() {
       <footer className="bg-primary text-primary-foreground mt-24">
         <div className="container max-w-6xl py-4 mx-auto">
           <Link href="/">
-            <Image src={fullLogo} alt="app logo" width={120} />
+            <Image
+              src={fullLogo}
+              alt="app logo"
+              className="w-[80px] md:w-[120px]"
+            />
           </Link>
-          <div className="text-sm text-center">
+          <div className="text-[12px] md:text-sm text-center mt-2">
             Ansell Maximilian · &copy;2023
           </div>
         </div>
