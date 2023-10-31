@@ -1,113 +1,204 @@
-import Image from 'next/image'
+import Image from "next/image";
+import Link from "next/link";
+import fullLogo from "@/assets/images/logo-full.svg";
+import dashboard from "@/assets/images/screenshots/dashboard.png";
+import chat from "@/assets/images/screenshots/chat.png";
+import surveys from "@/assets/images/screenshots/surveys.png";
+import posts from "@/assets/images/screenshots/posts.png";
+import hero from "@/assets/images/hero.svg";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Wifi } from "lucide-react";
 
-export default function Home() {
+export default async function Home() {
+  const cookieStore = cookies();
+
+  const supabase = createServerComponentClient({ cookies: () => cookieStore });
+
+  const user = (await supabase.auth.getSession()).data.session?.user;
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div>
+      <header className="border-b border-border">
+        <nav className="max-w-6xl mx-auto container flex justify-between items-center py-4">
+          <div>
+            <Link href="/">
+              <Image src={fullLogo} alt="app logo" width={120} />
+            </Link>
+            <ul>
+              <li></li>
+              <li></li>
+              <li></li>
+            </ul>
+          </div>
+
+          <div className="flex gap-2">
+            {user ? (
+              <Link
+                href="/communities"
+                className={cn(buttonVariants({ size: "sm" }))}
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/auth/sign-in"
+                  className={cn(
+                    buttonVariants({ size: "sm", variant: "outline" })
+                  )}
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/auth/sign-up"
+                  className={cn(buttonVariants({ size: "sm" }))}
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
+          </div>
+        </nav>
+      </header>
+      <main>
+        <div className="max-w-5xl mx-auto container">
+          <div className="text-center py-10 flex flex-col items-center justify-center">
+            <div className="my-6">
+              <Image
+                src={hero}
+                alt="hero image"
+                width={400}
+                className="w-[500px]"
+              />
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-center">
+                <a href="https://ably.com/" target="_blank">
+                  <Badge>Made with Ably</Badge>
+                </a>
+              </div>
+              <h1 className="text-5xl font-semibold tracking-tight">
+                Unite, Communicate, and Collaborate in{" "}
+                <span className="text-orange-600 font-bold">Real Time</span>
+              </h1>
+              <div className="text-3xl tracking-tighter text-secondary-foreground">
+                Empower Your Community with Real-Time Social Interaction
+              </div>
+              <Link href="/communities" className={cn(buttonVariants({}))}>
+                Get Started
+              </Link>
+            </div>
+          </div>
+          <div className="mt-8 relative space-y-6">
+            <div className="border-8 border-border rounded-md overflow-hidden ">
+              <Image src={dashboard} alt="screenshot" className="w-full" />
+            </div>
+            <div>
+              <h2 className="text-4xl font-semibold tracking-tight text-center">
+                Real Time Community Dashboards
+              </h2>
+              <p className="text-center text-muted-foreground mt-4 text-xl">
+                View and manage community and members data live
+              </p>
+
+              <div className="mt-4 text-xl text-center tracking-tight">
+                Using Ably&apos;s Space feature along with its pub/sub
+                connections, you can monitor your community data in real time.
+                See how many members are online and know exacly who are!
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-center mt-32">
+            <Wifi className="w-32 h-32 text-orange-600" />
+          </div>
+          <div className="mt-32">
+            <div>
+              <h2 className="text-4xl font-semibold tracking-tight text-center">
+                Take Advantage of Other Live Features
+              </h2>
+              <p className="text-center text-muted-foreground mt-4 text-xl">
+                Experience real time social interaction with Ably
+              </p>
+            </div>
+            <div className="space-y-10 mt-16">
+              <div>
+                <div className="grid grid-cols-12 gap-8">
+                  <Image
+                    src={chat}
+                    className="border-4 border-border rounded-md overflow-hidden col-span-7"
+                    alt="chat screenshot"
+                  />
+                  <div className="col-span-5">
+                    <h3 className="tracking-tight text-2xl font-medium mb-4">
+                      Chat with community members in real time
+                    </h3>
+                    <p className="text-xl">
+                      Communicate within your communities live. Using Ably&apos;
+                      pub/sub features, you will be able to chat with your
+                      fellow community-mates in real time. Send and respond to
+                      messages quickly.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div className="grid grid-cols-12 gap-8">
+                  <div className="col-span-5">
+                    <h3 className="tracking-tight text-2xl font-medium mb-4">
+                      Take surveys and get real time answers and results
+                    </h3>
+                    <p className="text-xl">
+                      Need to gauge community opinions or take a vote? Visit
+                      your community&apos;s survey tab. Create a survey,
+                      establish choices, and watch your community answer in real
+                      time.
+                    </p>
+                  </div>
+                  <Image
+                    src={surveys}
+                    className="border-4 border-border rounded-md overflow-hidden col-span-7"
+                    alt="chat screenshot"
+                  />
+                </div>
+              </div>
+              <div>
+                <div className="grid grid-cols-12 gap-8">
+                  <Image
+                    src={posts}
+                    className="border-4 border-border rounded-md overflow-hidden col-span-7"
+                    alt="chat screenshot"
+                  />
+                  <div className="col-span-5">
+                    <h3 className="tracking-tight text-2xl font-medium mb-4">
+                      Post and share things to your community
+                    </h3>
+                    <p className="text-xl">
+                      Share stories, announcements, and other things within your
+                      communities. Get notified whenever a community-mate shares
+                      something.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore the Next.js 13 playground.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+      </main>
+      <footer className="bg-primary text-primary-foreground mt-24">
+        <div className="container max-w-6xl py-4 mx-auto">
+          <Link href="/">
+            <Image src={fullLogo} alt="app logo" width={120} />
+          </Link>
+          <div className="text-sm text-center">
+            Ansell Maximilian · &copy;2023
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
 }

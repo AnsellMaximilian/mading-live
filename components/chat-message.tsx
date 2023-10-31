@@ -14,7 +14,7 @@ export default function ChatMessage({ message, isCurrentUser = false }: Props) {
       <div
         className={`${
           isCurrentUser ? "ml-auto" : ""
-        } p-2 bg-red-100 rounded-md relative`}
+        } p-2 bg-orange-100 rounded-md relative`}
       >
         <div className="text-xs font-semibold">{message.sender_username}</div>
         <div className="text-sm pr-10">{message.content}</div>
