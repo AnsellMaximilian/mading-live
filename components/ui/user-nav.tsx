@@ -16,7 +16,7 @@ import { useUser } from "@/context/UserContext";
 import Link from "next/link";
 
 export function UserNav() {
-  const { currentUser } = useUser();
+  const { currentUser, logout } = useUser();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -64,7 +64,7 @@ export function UserNav() {
           <DropdownMenuItem>New Team</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={logout}>
           Log out
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>

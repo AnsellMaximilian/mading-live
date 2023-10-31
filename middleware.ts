@@ -13,14 +13,23 @@ export async function middleware(req: NextRequest) {
   } = await supabase.auth.getUser();
 
   // if user is signed in and the current path is / redirect the user to /account
-  // if (user && req.nextUrl.pathname === "/") {
-  //   return NextResponse.redirect(new URL("/account", req.url));
-  // }
+  if (
+    user &&
+    (req.nextUrl.pathname === "/auth/sign-in" ||
+      req.nextUrl.pathname === "/auth/sign-up")
+  ) {
+    return NextResponse.redirect(new URL("/communities", req.url));
+  }
 
   // // if user is not signed in and the current path is not / redirect the user to /
-  // if (!user && req.nextUrl.pathname !== "/") {
-  //   return NextResponse.redirect(new URL("/", req.url));
-  // }
+  if (
+    !user &&
+    (req.nextUrl.pathname !== "/" ||
+      req.nextUrl.pathname.startsWith("/communities") ||
+      req.nextUrl.pathname.startsWith("/profile"))
+  ) {
+    return NextResponse.redirect(new URL("/auth/sign-in", req.url));
+  }
 
   return res;
 }
