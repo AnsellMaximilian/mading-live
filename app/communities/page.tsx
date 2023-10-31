@@ -18,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { Loader2 } from "lucide-react";
+import fullLogo from "@/assets/images/logo-full.svg";
 
 import {
   Form,
@@ -53,6 +54,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bell, CheckIcon } from "lucide-react";
 import { UserNav } from "@/components/ui/user-nav";
 import Notifications from "@/components/ui/notifications";
+import Link from "next/link";
+import Image from "next/image";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -125,11 +128,13 @@ export default function CommunitiesPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="px-3 py-1 border-b border-border h-[4.5rem] flex items-center">
+      <header className="px-4 py-1 border-b border-border h-[4.5rem] flex items-center justify-between">
+        <Link href="/">
+          <Image src={fullLogo} alt="app logo" width={120} />
+        </Link>
         <div className="flex items-center grow">
           <div className="ml-auto flex items-center gap-2">
             <Notifications />
-
             <UserNav />
           </div>
         </div>
