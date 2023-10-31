@@ -26,6 +26,7 @@ import { Database } from "@/lib/schema";
 import { useUser } from "@/context/UserContext";
 import { useChannel, useAbly } from "ably/react";
 import { Types } from "ably";
+import { useCommunity } from "@/context/CommunityContext";
 
 export default function Notifications() {
   const { notifications } = useNotifications();
@@ -73,6 +74,10 @@ export default function Notifications() {
                     notificationChannel.publish("remove", notification.id);
                     if (notification.type === "community_invitation") {
                       router.push("/profile/invitations");
+                    } else if (notification.type === "survey_creation") {
+                      router.push(
+                        `/communities/${notification.community_id}/surveys/${notification.content_id}`
+                      );
                     }
                   }
                 }}

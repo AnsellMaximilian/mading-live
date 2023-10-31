@@ -9,15 +9,24 @@ import {
   createClientComponentClient,
   User,
 } from "@supabase/auth-helpers-nextjs";
+import { useChannel, useAbly } from "ably/react";
+
 import { Community, CommunityMember } from "@/lib/types";
 import { useParams } from "next/navigation";
 import { Database } from "@/lib/schema";
+import { useUser } from "./UserContext";
 
 export interface CommunityContextData {
   community: Community | null;
   loading: boolean;
   setCommunity: (community: Community | null) => void;
   invitations: Database["public"]["Tables"]["community_invitations"]["Row"][];
+  sendMembersNotification: (
+    title: string,
+    contentId: string | null,
+    communityId?: string,
+    type?: Database["public"]["Tables"]["notifications"]["Insert"]["type"]
+  ) => Promise<void>;
 }
 
 export const CommunityContext = createContext<CommunityContextData>({
@@ -25,6 +34,7 @@ export const CommunityContext = createContext<CommunityContextData>({
   loading: true,
   setCommunity: () => {},
   invitations: [],
+  sendMembersNotification: async () => {},
 });
 
 export const CommunityContextProvider: React.FC<{ children: ReactNode }> = ({
@@ -38,6 +48,9 @@ export const CommunityContextProvider: React.FC<{ children: ReactNode }> = ({
   const [invitations, setInvitations] = useState<
     Database["public"]["Tables"]["community_invitations"]["Row"][]
   >([]);
+
+  const ablyClient = useAbly();
+  const { currentUser } = useUser();
 
   useEffect(() => {
     (async () => {
@@ -85,6 +98,36 @@ export const CommunityContextProvider: React.FC<{ children: ReactNode }> = ({
     })();
   }, [community, supabase]);
 
+  const sendMembersNotification = async (
+    title: string,
+    contentId: string | null,
+    communityId?: string,
+    type?: Database["public"]["Tables"]["notifications"]["Insert"]["type"]
+  ) => {
+    if (community && community.members.length > 0) {
+      const notifications: Database["public"]["Tables"]["notifications"]["Insert"][] =
+        community.members
+          .filter((m) => m.id !== currentUser?.id)
+          .map((m) => ({
+            user_id: m.id,
+            title,
+            community_id: community.id,
+            type: type ? type : "info",
+            content_id: contentId,
+            description: "",
+            read: false,
+          }));
+
+      const {} = await supabase.from("notifications").insert(notifications);
+      notifications.forEach((not) => {
+        const notificationChannel = ablyClient.channels.get(
+          `notifications:${not.user_id}`
+        );
+        notificationChannel.publish("add", not);
+      });
+    }
+  };
+
   return (
     <CommunityContext.Provider
       value={{
@@ -92,6 +135,7 @@ export const CommunityContextProvider: React.FC<{ children: ReactNode }> = ({
         loading,
         setCommunity,
         invitations,
+        sendMembersNotification,
       }}
     >
       {children}

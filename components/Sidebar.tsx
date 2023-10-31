@@ -78,7 +78,7 @@ export default function Sidebar({ className }: SidebarProps) {
                 </Button>
               </ActiveLink>
               <ActiveLink
-                href="/communities/dashboard"
+                href={`/communities/${community.id}/surveys`}
                 className="block rounded-md"
                 activeClass="bg-accent text-accent-foreground"
               >
@@ -96,7 +96,7 @@ export default function Sidebar({ className }: SidebarProps) {
                 </Button>
               </ActiveLink>
               <ActiveLink
-                href="/communities/dashboard"
+                href={`/communities/${community.id}/surveys`}
                 className="block rounded-md"
                 activeClass="bg-accent text-accent-foreground"
               >

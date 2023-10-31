@@ -234,6 +234,123 @@ export interface Database {
           }
         ]
       }
+      survey_answers: {
+        Row: {
+          choice_id: string | null
+          created_at: string
+          custom_answer: string | null
+          survey_id: string
+          user_id: string
+        }
+        Insert: {
+          choice_id?: string | null
+          created_at?: string
+          custom_answer?: string | null
+          survey_id: string
+          user_id: string
+        }
+        Update: {
+          choice_id?: string | null
+          created_at?: string
+          custom_answer?: string | null
+          survey_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "survey_answers_choice_id_fkey"
+            columns: ["choice_id"]
+            referencedRelation: "survey_choices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "survey_answers_survey_id_fkey"
+            columns: ["survey_id"]
+            referencedRelation: "surveys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "survey_answers_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      survey_choices: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          survey_id: string
+          text: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          survey_id: string
+          text: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          survey_id?: string
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "survey_choices_survey_id_fkey"
+            columns: ["survey_id"]
+            referencedRelation: "surveys"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      surveys: {
+        Row: {
+          community_id: string
+          created_at: string
+          creator_id: string
+          description: string | null
+          id: string
+          open: boolean
+          title: string
+        }
+        Insert: {
+          community_id: string
+          created_at?: string
+          creator_id: string
+          description?: string | null
+          id?: string
+          open?: boolean
+          title: string
+        }
+        Update: {
+          community_id?: string
+          created_at?: string
+          creator_id?: string
+          description?: string | null
+          id?: string
+          open?: boolean
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "surveys_community_id_fkey"
+            columns: ["community_id"]
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "surveys_creator_id_fkey"
+            columns: ["creator_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -245,7 +362,7 @@ export interface Database {
       }
     }
     Enums: {
-      notification_type: "community_invitation" | "info"
+      notification_type: "community_invitation" | "info" | "survey_creation"
     }
     CompositeTypes: {
       [_ in never]: never
