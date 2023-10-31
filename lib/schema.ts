@@ -203,6 +203,46 @@ export interface Database {
           }
         ]
       }
+      posts: {
+        Row: {
+          author_id: string
+          community_id: string
+          content: string
+          created_at: string
+          id: string
+          title: string
+        }
+        Insert: {
+          author_id: string
+          community_id: string
+          content: string
+          created_at?: string
+          id?: string
+          title: string
+        }
+        Update: {
+          author_id?: string
+          community_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_author_id_fkey"
+            columns: ["author_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_community_id_fkey"
+            columns: ["community_id"]
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -362,7 +402,11 @@ export interface Database {
       }
     }
     Enums: {
-      notification_type: "community_invitation" | "info" | "survey_creation"
+      notification_type:
+        | "community_invitation"
+        | "info"
+        | "survey_creation"
+        | "post_creation"
     }
     CompositeTypes: {
       [_ in never]: never

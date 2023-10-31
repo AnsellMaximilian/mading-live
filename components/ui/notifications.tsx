@@ -78,6 +78,10 @@ export default function Notifications() {
                       router.push(
                         `/communities/${notification.community_id}/surveys/${notification.content_id}`
                       );
+                    } else if (notification.type === "post_creation") {
+                      router.push(
+                        `/communities/${notification.community_id}/posts?postId=${notification.content_id}`
+                      );
                     }
                   }
                 }}

@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, ScrollText } from "lucide-react";
 
 import {
   LayoutDashboard,
@@ -77,7 +77,7 @@ export default function Sidebar({ className }: SidebarProps) {
                   </div>
                 </Button>
               </ActiveLink>
-              <ActiveLink
+              {/* <ActiveLink
                 href={`/communities/${community.id}/events`}
                 className="block rounded-md"
                 activeClass="bg-accent text-accent-foreground"
@@ -91,6 +91,24 @@ export default function Sidebar({ className }: SidebarProps) {
                     <span>Events</span>
                     <span className="text-xs text-muted-foreground hidden 2xl:block text-left">
                       Manage your community events.
+                    </span>
+                  </div>
+                </Button>
+              </ActiveLink> */}
+              <ActiveLink
+                href={`/communities/${community.id}/posts`}
+                className="block rounded-md"
+                activeClass="bg-accent text-accent-foreground"
+              >
+                <Button
+                  variant="ghost"
+                  className="flex w-full justify-start py-4 h-auto"
+                >
+                  <ScrollText size={24} className="mr-2" />
+                  <div className="hidden md:flex flex-col items-start">
+                    <span>Posts</span>
+                    <span className="text-xs text-muted-foreground hidden 2xl:block text-left">
+                      Post anything to your community members.
                     </span>
                   </div>
                 </Button>
