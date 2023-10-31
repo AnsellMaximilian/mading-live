@@ -43,7 +43,7 @@ export default function SignUpPage() {
     <>
       <div className="container relative hidden h-[800px] flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
         <Link
-          href="/sign-in"
+          href="/auth/sign-in"
           className={cn(
             buttonVariants({ variant: "ghost" }),
             "absolute right-4 top-4 md:right-8 md:top-8"
@@ -66,7 +66,7 @@ export default function SignUpPage() {
             >
               <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
             </svg>
-            Acme Inc
+            Mading Live
           </div>
           <div className="relative z-20 mt-auto">
             <blockquote className="space-y-2">
