@@ -20,12 +20,12 @@ export default function ActiveLink({
   children,
 }: PropsWithChildren<ActiveLinkProps>) {
   const currentRoute = usePathname();
+  const isActive = new RegExp(`^${href}`).test(currentRoute);
+
   return (
     <Link
       href={href}
-      className={`${className} ${
-        currentRoute === href ? activeClass : nonActiveClass
-      }`}
+      className={`${className} ${isActive ? activeClass : nonActiveClass}`}
     >
       {text ? text : children}
     </Link>
