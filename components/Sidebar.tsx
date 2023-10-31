@@ -22,7 +22,7 @@ export default function Sidebar({ className }: SidebarProps) {
   return (
     <div
       className={cn(
-        "pb-12 border-r border-border md:w-[275px] lg:w-[300px]",
+        "pb-12 border-r border-border md:w-[275px] lg:w-[300px] shrink-0",
         className
       )}
     >
@@ -114,7 +114,7 @@ export default function Sidebar({ className }: SidebarProps) {
                 </Button>
               </ActiveLink>
               <ActiveLink
-                href="/communities/dashboard"
+                href={`/communities/${community.id}/settings`}
                 className="block rounded-md"
                 activeClass="bg-accent text-accent-foreground"
               >
