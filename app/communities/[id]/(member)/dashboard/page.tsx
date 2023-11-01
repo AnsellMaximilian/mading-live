@@ -209,7 +209,7 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
@@ -267,7 +267,7 @@ export default function DashboardPage() {
                   </p>
                 </CardContent>
               </Card>
-              <Card>
+              {/* <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
                     Active Now
@@ -291,7 +291,7 @@ export default function DashboardPage() {
                     +201 since last hour
                   </p>
                 </CardContent>
-              </Card>
+              </Card> */}
             </div>
             <div>
               <Card>
