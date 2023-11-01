@@ -16,7 +16,7 @@ export default function SignUpPage() {
   const router = useRouter();
   const supabase = createClientComponentClient();
 
-  const { currentUser, setCurrentUser } = useUser();
+  const { currentUser, handleSetUserWithProfile } = useUser();
 
   const handleSignIn = async (email: string, password: string) => {
     const res = await supabase.auth.signInWithPassword({
@@ -25,13 +25,15 @@ export default function SignUpPage() {
     });
     if (res.error) {
       return;
+    } else if (res.data.session) {
+      await handleSetUserWithProfile(res.data.session.user);
+      router.push("/communities");
     }
-    router.push("/communities");
   };
 
   return (
     <>
-      <div className="container relative h-[800px] flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+      <div className="container flex relative h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
         <Link
           href="/auth/sign-up"
           className={cn(

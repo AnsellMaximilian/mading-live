@@ -5,7 +5,10 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import {
+  createClientComponentClient,
+  User,
+} from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/lib/schema";
 import { UserWithProfile } from "@/lib/types";
 import { usePathname, useRouter } from "next/navigation";
@@ -14,6 +17,7 @@ export interface UserContextData {
   currentUser: UserWithProfile | null;
   loading: boolean;
   setCurrentUser: (user: UserWithProfile | null) => void;
+  handleSetUserWithProfile: (user: User) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -21,6 +25,7 @@ export const UserContext = createContext<UserContextData>({
   currentUser: null,
   loading: true,
   setCurrentUser: () => {},
+  handleSetUserWithProfile: async () => {},
   logout: async () => {},
 });
 
@@ -34,7 +39,10 @@ export const UserContextProvider: React.FC<{ children: ReactNode }> = ({
   const currentRoute = usePathname();
 
   useEffect(() => {
-    const unsub = supabase.auth.onAuthStateChange(async (event, session) => {
+    (async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session) {
         if (
           currentRoute === "/auth/sign-in" ||
@@ -59,16 +67,28 @@ export const UserContextProvider: React.FC<{ children: ReactNode }> = ({
         }
         setCurrentUser(null);
       }
-    });
-    return () => unsub.data.subscription.unsubscribe();
+    })();
   }, [supabase]);
 
   const handleSetCurrentUser = (user: UserWithProfile | null) => {
     setCurrentUser(user);
   };
 
+  const handleSetUserWithProfile = async (user: User) => {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select()
+      .eq("id", user.id)
+      .single();
+    if (profile) {
+      setCurrentUser({ ...user, profile });
+    }
+  };
+
   const logout = async () => {
     await supabase.auth.signOut();
+    setCurrentUser(null);
+    router.push("/auth/sign-in");
   };
 
   return (
@@ -77,6 +97,7 @@ export const UserContextProvider: React.FC<{ children: ReactNode }> = ({
         currentUser,
         loading,
         setCurrentUser: handleSetCurrentUser,
+        handleSetUserWithProfile,
         logout,
       }}
     >
