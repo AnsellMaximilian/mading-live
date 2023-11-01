@@ -5,6 +5,8 @@ const client = new Ably.Rest({
   key: process.env.ABLY_API_KEY,
 });
 
+export const revalidate = 0;
+
 export async function GET(request: Request) {
   const tokenParams: Types.TokenParams = {
     clientId: `mading-live`,
