@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     capability: { "*": ["publish", "subscribe", "presence"] },
   };
 
-  return new Promise((resolve) => {
+  return new Promise<Response>((resolve) => {
     client.auth.createTokenRequest(tokenParams, (err, token) => {
       if (err) {
         resolve(
