@@ -24,7 +24,7 @@ import ProfileSidebar from "@/components/ProfileSidebar";
 
 const client = new Realtime.Promise({
   authUrl: `${
-    process.env.MODE === "production"
+    process.env.NEXT_PUBLIC_MODE === "production"
       ? "https://mading-live.vercel.app"
       : "http://localhost:3000"
   }/api/ably-auth`,
