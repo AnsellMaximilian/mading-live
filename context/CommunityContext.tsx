@@ -3,6 +3,7 @@ import React, {
   ReactNode,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import {
@@ -15,6 +16,7 @@ import { Community, CommunityMember } from "@/lib/types";
 import { useParams } from "next/navigation";
 import { Database } from "@/lib/schema";
 import { useUser } from "./UserContext";
+import { Types } from "ably";
 
 export interface CommunityContextData {
   community: Community | null;
@@ -51,6 +53,38 @@ export const CommunityContextProvider: React.FC<{ children: ReactNode }> = ({
 
   const ablyClient = useAbly();
   const { currentUser } = useUser();
+
+  const communityChannel = useMemo(() => {
+    return ablyClient.channels.get(`community:${community?.id}`);
+  }, [ablyClient.channels, community]);
+
+  useEffect(() => {
+    communityChannel.subscribe((ablyMessage: Types.Message) => {
+      if (ablyMessage.name === "new_member") {
+        const newMember: CommunityMember = ablyMessage.data;
+        setCommunity((value) =>
+          value
+            ? {
+                ...value,
+                members: [...value.members, newMember],
+              }
+            : null
+        );
+      } else if (ablyMessage.name === "invitation") {
+        const newInvitation: Database["public"]["Tables"]["community_invitations"]["Row"] =
+          ablyMessage.data;
+        setInvitations((prev) => [...prev, newInvitation]);
+      } else if (ablyMessage.name === "invitation_remove") {
+        setInvitations((prev) =>
+          prev.filter((inv) => inv.id !== ablyMessage.data)
+        );
+      }
+    });
+
+    return () => {
+      communityChannel.unsubscribe(console.log);
+    };
+  }, [communityChannel]);
 
   useEffect(() => {
     (async () => {

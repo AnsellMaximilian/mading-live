@@ -26,6 +26,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
+import { CommunityMember } from "@/lib/types";
 
 type Invitations =
   (Database["public"]["Tables"]["community_invitations"]["Row"] & {
@@ -62,6 +63,18 @@ export default function UserInvitationsPage() {
           .select()
           .eq("community_id", community_id)
           .neq("user_id", currentUser?.id);
+
+        if (currentUser) {
+          const newMember: CommunityMember = {
+            ...currentUser.profile,
+            is_admin: false,
+          };
+          const communityChannel = ablyClient.channels.get(
+            `community:${community_id}`
+          );
+          communityChannel.publish("new_member", newMember);
+          communityChannel.publish("invitation_remove", invitation_id);
+        }
 
         if (members) {
           const notifications: Database["public"]["Tables"]["notifications"]["Insert"][] =

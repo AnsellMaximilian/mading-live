@@ -84,6 +84,7 @@ export default function DashboardPage() {
   });
   const ablyClient = useAbly();
   const { members } = useMembers();
+  console.log(members);
 
   async function sendInvite(values: z.infer<typeof formSchema>) {
     if (currentUser) {
@@ -114,6 +115,11 @@ export default function DashboardPage() {
             })
             .select()
             .single();
+
+          const communityChannel = ablyClient.channels.get(
+            `community:${community.id}`
+          );
+          communityChannel.publish("invitation", invitation);
           if (notification) {
             const notificationChannel = ablyClient.channels.get(
               `notifications:${user.id}`
@@ -132,6 +138,8 @@ export default function DashboardPage() {
 
     inviteForm.reset({ email: "" });
   }
+
+  console.log({ members, community });
 
   return (
     <div className="h-[calc(100vh-4.5rem)] flex flex-col p-4 overflow-auto">
@@ -248,7 +256,7 @@ export default function DashboardPage() {
                       members?.filter(
                         (m) =>
                           m.isConnected &&
-                          community?.members.some(
+                          !!community?.members.find(
                             (cm) => cm.id === m.profileData?.id
                           )
                       ).length
