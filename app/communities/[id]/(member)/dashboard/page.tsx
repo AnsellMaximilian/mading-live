@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { useChannel } from "ably/react";
+import { useAbly, useChannel } from "ably/react";
 import type { Types } from "ably";
 import { Plus, Users, Loader2, MailWarning, Wifi } from "lucide-react";
 
@@ -82,11 +82,7 @@ export default function DashboardPage() {
       email: "",
     },
   });
-
-  const { space } = useSpace((update) => {
-    // console.log(update);
-  });
-
+  const ablyClient = useAbly();
   const { members } = useMembers();
 
   async function sendInvite(values: z.infer<typeof formSchema>) {
@@ -118,6 +114,12 @@ export default function DashboardPage() {
             })
             .select()
             .single();
+          if (notification) {
+            const notificationChannel = ablyClient.channels.get(
+              `notifications:${user.id}`
+            );
+            notificationChannel.publish("add", notification);
+          }
 
           toast({
             title: `Invitation sent!`,

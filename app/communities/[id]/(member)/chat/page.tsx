@@ -53,14 +53,14 @@ export default function ChatPage() {
 
   const chatChannel = useMemo(() => {
     return ablyClient.channels.get(`messages:${community?.id}`);
-  }, [community, ablyClient.channels]);
+  }, [community, ablyClient]);
 
   useEffect(() => {
     chatChannel.subscribe((ablyMessage: Types.Message) => {
       if (ablyMessage.name === "add") {
         const message: Database["public"]["Tables"]["chat_messages"]["Row"] =
           ablyMessage.data;
-        setMessages((prev) => [...prev, message]);
+        setMessages((prev) => Array.from(new Set([...prev, message])));
       }
     });
 

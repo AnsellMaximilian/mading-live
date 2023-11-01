@@ -113,7 +113,7 @@ export default function CommunitiesPage() {
         .select()
         .single();
 
-      if (data) router.push(`/communities/${data.id}`);
+      if (data) router.push(`/communities/${data.id}/dashboard`);
 
       setIsCreateLoading(false);
     }

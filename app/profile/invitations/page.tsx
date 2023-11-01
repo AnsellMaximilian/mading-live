@@ -82,7 +82,7 @@ export default function UserInvitationsPage() {
             );
             notificationChannel.publish("add", not);
           });
-          router.push(`/communities/${community_id}`);
+          router.push(`/communities/${community_id}/dashboard`);
         }
       }
     }
