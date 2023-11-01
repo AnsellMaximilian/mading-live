@@ -11,7 +11,11 @@ import { SpaceProvider, SpacesProvider } from "@ably/spaces/react";
 import { NotificationProvider } from "@/context/NotificationContext";
 
 const client = new Realtime.Promise({
-  authUrl: "http://localhost:3000/api/ably-auth",
+  authUrl: `${
+    process.env.MODE === "production"
+      ? "https://mading-live.vercel.app"
+      : "http://localhost:3000"
+  }/api/ably-auth`,
 });
 const spaces = new Spaces(client);
 

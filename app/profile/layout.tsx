@@ -23,7 +23,11 @@ import { NotificationProvider } from "@/context/NotificationContext";
 import ProfileSidebar from "@/components/ProfileSidebar";
 
 const client = new Realtime.Promise({
-  authUrl: "http://localhost:3000/api/ably-auth",
+  authUrl: `${
+    process.env.MODE === "production"
+      ? "https://mading-live.vercel.app"
+      : "http://localhost:3000"
+  }/api/ably-auth`,
 });
 
 export default function Layout({ children }: { children: React.ReactNode }) {
