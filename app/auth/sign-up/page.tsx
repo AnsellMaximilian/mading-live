@@ -71,11 +71,13 @@ export default function SignUpPage() {
         </div>
         <div className="lg:p-8">
           <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-            <Image
-              src={fullLogo}
-              alt="full logo"
-              className="w-40 mx-auto lg:hidden"
-            />
+            <Link href="/">
+              <Image
+                src={fullLogo}
+                alt="full logo"
+                className="w-40 mx-auto lg:hidden"
+              />
+            </Link>
             <div className="flex flex-col space-y-2 text-center">
               <h1 className="text-2xl font-semibold tracking-tight">
                 Create an account
