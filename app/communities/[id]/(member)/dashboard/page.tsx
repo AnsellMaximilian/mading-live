@@ -84,7 +84,6 @@ export default function DashboardPage() {
   });
   const ablyClient = useAbly();
   const { members } = useMembers();
-  console.log(members);
 
   async function sendInvite(values: z.infer<typeof formSchema>) {
     if (currentUser) {
@@ -94,7 +93,24 @@ export default function DashboardPage() {
         .select()
         .eq("email", values.email)
         .single();
+
       if (user && community) {
+        // check for pending invitations
+        const { data: existingPendingInvite } = await supabase
+          .from("community_invitations")
+          .select()
+          .eq("community_id", community.id)
+          .is("accepted", null)
+          .eq("user_id", user.id)
+          .single();
+
+        if (existingPendingInvite) {
+          toast({
+            title: "Already invited user",
+            description: "A pending invitation to this user already exists.",
+          });
+        }
+
         const { data: invitation } = await supabase
           .from("community_invitations")
           .insert({
@@ -132,6 +148,12 @@ export default function DashboardPage() {
             description: `Invitation sent to user with email ${values.email}`,
           });
         }
+      } else {
+        toast({
+          title: "No user using that email",
+          description:
+            "Ensure you typed the email correctly and that a user exists with that email.",
+        });
       }
       setIsInviteLoading(false);
     }
