@@ -119,6 +119,14 @@ export default function CommunitiesPage() {
     }
   }
 
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from("communities").delete().eq("id", id);
+
+    if (!error) {
+      setCommunities((prev) => prev.filter((s) => s.id !== id));
+    }
+  };
+
   if (isLoading)
     return (
       <div className="h-screen flex items-center justify-center">
@@ -228,7 +236,10 @@ export default function CommunitiesPage() {
                 key={community.id}
                 className="col-span-12 md:col-span-6 lg:col-span-4"
               >
-                <CommunityCard community={community} />
+                <CommunityCard
+                  community={community}
+                  handleDelete={handleDelete}
+                />
               </div>
             ))}
           </div>
