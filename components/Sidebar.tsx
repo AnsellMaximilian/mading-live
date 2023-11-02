@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Loader2, ScrollText } from "lucide-react";
+import { ArrowLeft, Loader2, ScrollText } from "lucide-react";
 
 import {
   LayoutDashboard,
@@ -14,6 +14,7 @@ import ActiveLink from "./ui/active-link";
 import { Community } from "@/lib/types";
 import { HTMLAttributes } from "react";
 import { useCommunity } from "@/context/CommunityContext";
+import Link from "next/link";
 
 interface SidebarProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -22,12 +23,12 @@ export default function Sidebar({ className }: SidebarProps) {
   return (
     <div
       className={cn(
-        "pb-12 border-r border-border md:w-[275px] lg:w-[300px] shrink-0",
+        "border-r border-border md:w-[275px] lg:w-[300px] shrink-0",
         className
       )}
     >
-      <div className="space-y-4">
-        <div className="px-3 py-2">
+      <div className="space-y-4 h-full">
+        <div className="px-3 py-2 h-full flex flex-col">
           <div className="mb-2 p-4 flex items-center border-b border-border h-16">
             <Users size={24} className="mr-2" />
             <h2 className="hidden md:block text-lg font-semibold tracking-tight">
@@ -40,7 +41,7 @@ export default function Sidebar({ className }: SidebarProps) {
           </div>
 
           {!loading && community ? (
-            <div className="space-y-1">
+            <div className="space-y-1 grow">
               <ActiveLink
                 href={`/communities/${community.id}/dashboard`}
                 className="block rounded-md"
@@ -155,6 +156,22 @@ export default function Sidebar({ className }: SidebarProps) {
               <Loader2 className="mr-2 h-8 w-8 animate-spin" />
             </div>
           )}
+          <div>
+            <Link href={`/communities`} className="block rounded-md">
+              <Button
+                variant="ghost"
+                className="flex w-full justify-start py-4 h-auto"
+              >
+                <ArrowLeft size={24} className="mr-2" />
+                <div className="hidden md:flex flex-col items-start">
+                  <span>Communities</span>
+                  <span className="text-xs text-muted-foreground hidden 2xl:block text-left">
+                    View all your communities.
+                  </span>
+                </div>
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
