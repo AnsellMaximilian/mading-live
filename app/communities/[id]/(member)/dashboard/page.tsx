@@ -109,44 +109,44 @@ export default function DashboardPage() {
             title: "Already invited user",
             description: "A pending invitation to this user already exists.",
           });
-        }
-
-        const { data: invitation } = await supabase
-          .from("community_invitations")
-          .insert({
-            user_id: user.id,
-            community_id: community.id,
-          })
-          .select()
-          .single();
-        if (invitation) {
-          const { data: notification } = await supabase
-            .from("notifications")
+        } else {
+          const { data: invitation } = await supabase
+            .from("community_invitations")
             .insert({
               user_id: user.id,
               community_id: community.id,
-              title: `You received an invitation to join the community "${community.name}"`,
-              read: false,
-              type: "community_invitation",
             })
             .select()
             .single();
+          if (invitation) {
+            const { data: notification } = await supabase
+              .from("notifications")
+              .insert({
+                user_id: user.id,
+                community_id: community.id,
+                title: `You received an invitation to join the community "${community.name}"`,
+                read: false,
+                type: "community_invitation",
+              })
+              .select()
+              .single();
 
-          const communityChannel = ablyClient.channels.get(
-            `community:${community.id}`
-          );
-          communityChannel.publish("invitation", invitation);
-          if (notification) {
-            const notificationChannel = ablyClient.channels.get(
-              `notifications:${user.id}`
+            const communityChannel = ablyClient.channels.get(
+              `community:${community.id}`
             );
-            notificationChannel.publish("add", notification);
-          }
+            communityChannel.publish("invitation", invitation);
+            if (notification) {
+              const notificationChannel = ablyClient.channels.get(
+                `notifications:${user.id}`
+              );
+              notificationChannel.publish("add", notification);
+            }
 
-          toast({
-            title: `Invitation sent!`,
-            description: `Invitation sent to user with email ${values.email}`,
-          });
+            toast({
+              title: `Invitation sent!`,
+              description: `Invitation sent to user with email ${values.email}`,
+            });
+          }
         }
       } else {
         toast({
