@@ -28,7 +28,7 @@ export default function Sidebar({ className }: SidebarProps) {
       )}
     >
       <div className="space-y-4 h-full">
-        <div className="px-3 py-2 h-full flex flex-col">
+        <div className="px-1 md:px-3 py-2 h-full flex flex-col">
           <div className="mb-2 p-4 flex items-center border-b border-border h-16">
             <Users size={24} className="mr-2" />
             <h2 className="hidden md:block text-lg font-semibold tracking-tight">
