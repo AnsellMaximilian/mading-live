@@ -41,7 +41,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   }, [ablyClient.channels, currentUser]);
 
   useEffect(() => {
-    notificationsChannel.subscribe((ablyMessage: Types.Message) => {
+    const listener = (ablyMessage: Types.Message) => {
       if (ablyMessage.name === "add") {
         const notification: Database["public"]["Tables"]["notifications"]["Row"] =
           ablyMessage.data;
@@ -51,10 +51,11 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
           prev.filter((not) => not.id !== ablyMessage.data)
         );
       }
-    });
+    };
+    notificationsChannel.subscribe(listener);
 
     return () => {
-      notificationsChannel.unsubscribe(console.log);
+      notificationsChannel.unsubscribe(listener);
     };
   }, [notificationsChannel]);
 

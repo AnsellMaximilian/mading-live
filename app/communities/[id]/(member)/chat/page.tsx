@@ -56,16 +56,17 @@ export default function ChatPage() {
   }, [community, ablyClient]);
 
   useEffect(() => {
-    chatChannel.subscribe((ablyMessage: Types.Message) => {
+    const listener = (ablyMessage: Types.Message) => {
       if (ablyMessage.name === "add") {
         const message: Database["public"]["Tables"]["chat_messages"]["Row"] =
           ablyMessage.data;
-        setMessages((prev) => Array.from(new Set([...prev, message])));
+        setMessages((prev) => [...prev, message]);
       }
-    });
+    };
+    chatChannel.subscribe(listener);
 
     return () => {
-      chatChannel.unsubscribe(console.log);
+      chatChannel.unsubscribe(listener);
     };
   }, [chatChannel]);
 

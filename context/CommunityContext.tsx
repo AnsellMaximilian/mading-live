@@ -59,7 +59,7 @@ export const CommunityContextProvider: React.FC<{ children: ReactNode }> = ({
   }, [ablyClient.channels, community]);
 
   useEffect(() => {
-    communityChannel.subscribe((ablyMessage: Types.Message) => {
+    const listener = (ablyMessage: Types.Message) => {
       if (ablyMessage.name === "new_member") {
         const newMember: CommunityMember = ablyMessage.data;
         setCommunity((value) =>
@@ -79,10 +79,11 @@ export const CommunityContextProvider: React.FC<{ children: ReactNode }> = ({
           prev.filter((inv) => inv.id !== ablyMessage.data)
         );
       }
-    });
+    };
+    communityChannel.subscribe(listener);
 
     return () => {
-      communityChannel.unsubscribe(console.log);
+      communityChannel.unsubscribe(listener);
     };
   }, [communityChannel]);
 

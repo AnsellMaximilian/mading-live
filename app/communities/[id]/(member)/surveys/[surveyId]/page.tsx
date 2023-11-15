@@ -36,16 +36,17 @@ export default function SurveyPage() {
   }, [survey, ablyClient.channels]);
 
   useEffect(() => {
-    surveyChannel.subscribe((ablyMessage: Types.Message) => {
+    const listener = (ablyMessage: Types.Message) => {
       if (ablyMessage.name === "answer") {
         const answer: Database["public"]["Tables"]["survey_answers"]["Row"] =
           ablyMessage.data;
         setAnswers((prev) => [...prev, answer]);
       }
-    });
+    };
+    surveyChannel.subscribe(listener);
 
     return () => {
-      surveyChannel.unsubscribe(console.log);
+      surveyChannel.unsubscribe(listener);
     };
   }, [surveyChannel]);
 
