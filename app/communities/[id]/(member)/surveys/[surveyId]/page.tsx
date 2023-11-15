@@ -41,6 +41,20 @@ export default function SurveyPage() {
         const answer: Database["public"]["Tables"]["survey_answers"]["Row"] =
           ablyMessage.data;
         setAnswers((prev) => [...prev, answer]);
+      } else if (ablyMessage.name === "update-answer") {
+        const answer: Database["public"]["Tables"]["survey_answers"]["Row"] =
+          ablyMessage.data;
+        setAnswers((prev) =>
+          prev.map((ans) => {
+            if (
+              answer.user_id === ans.user_id &&
+              answer.survey_id === ans.survey_id
+            ) {
+              return { ...ans, choice_id: answer.choice_id };
+            }
+            return ans;
+          })
+        );
       }
     };
     surveyChannel.subscribe(listener);
@@ -77,28 +91,44 @@ export default function SurveyPage() {
   }, [supabase, surveyId, currentUser]);
 
   const handleChoose = async (choiceId: string) => {
-    if (currentUser && survey && !userAnswer && survey.open) {
-      const { data: answer } = await supabase
-        .from("survey_answers")
-        .insert({
-          user_id: currentUser.id,
-          survey_id: survey.id,
-          choice_id: choiceId,
-        })
-        .select()
-        .single();
-      if (answer) {
-        surveyChannel.publish("answer", answer);
-
-        setUserAnswer(answer);
+    if (currentUser && survey && survey.open) {
+      if (!userAnswer) {
+        const { data: answer } = await supabase
+          .from("survey_answers")
+          .insert({
+            user_id: currentUser.id,
+            survey_id: survey.id,
+            choice_id: choiceId,
+          })
+          .select()
+          .single();
+        if (answer) {
+          surveyChannel.publish("answer", answer);
+          setUserAnswer(answer);
+        }
+      } else {
+        // User has answered; update their choice.
+        const { data: answer } = await supabase
+          .from("survey_answers")
+          .update({
+            choice_id: choiceId,
+          })
+          .eq("user_id", currentUser.id)
+          .select()
+          .single();
+        if (answer) {
+          surveyChannel.publish("update-answer", answer);
+          setUserAnswer(answer);
+        }
       }
     }
-    if (userAnswer) {
-      toast({
-        title: `You have already answered in the survey!`,
-        description: `Only one answer allowed per survey.`,
-      });
-    }
+
+    // if (userAnswer) {
+    //   toast({
+    //     title: `You have already answered in the survey!`,
+    //     description: `Only one answer allowed per survey.`,
+    //   });
+    // }
   };
 
   const choiceDistribution: { [id: string]: number } = useMemo(() => {
