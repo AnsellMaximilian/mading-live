@@ -16,14 +16,18 @@ import { HTMLAttributes } from "react";
 import { useCommunity } from "@/context/CommunityContext";
 import Link from "next/link";
 
-interface SidebarProps extends HTMLAttributes<HTMLDivElement> {}
+interface SidebarProps extends HTMLAttributes<HTMLDivElement> {
+  open: boolean;
+  setOpen: (value: boolean) => void;
+}
 
-export default function Sidebar({ className }: SidebarProps) {
+export default function Sidebar({ className, open }: SidebarProps) {
   const { community, loading } = useCommunity();
   return (
     <div
       className={cn(
-        "border-r border-border md:w-[275px] lg:w-[300px] shrink-0",
+        "border-r border-border md:w-[275px] lg:w-[300px] shrink-0 fixed md:static md:left-auto z-50 bg-white inset-y-0 md:inset-y-auto transition-all duration-100 shadow-lg md:shadow-none",
+        open ? "left-0" : "-left-56",
         className
       )}
     >
