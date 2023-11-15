@@ -161,8 +161,6 @@ export default function DashboardPage() {
     inviteForm.reset({ email: "" });
   }
 
-  console.log({ members, community });
-
   return (
     <div className="h-[calc(100vh-4.5rem)] flex flex-col p-4 overflow-auto">
       <div className="flex-col md:flex">

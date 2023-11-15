@@ -33,7 +33,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (space && currentUser) {
-      console.log("entering...");
       space.enter({ ...currentUser });
     }
   }, [space, currentUser]);

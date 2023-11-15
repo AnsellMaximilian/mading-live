@@ -70,7 +70,6 @@ export default function ProfilePage() {
         .eq("id", currentUser.id)
         .select();
 
-      console.log(data);
       setIsLoading(false);
     }
   }

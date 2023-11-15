@@ -119,7 +119,6 @@ export default function PostsPage() {
   useEffect(() => {
     const postId = searchParams.get("postId");
     if (postId && postElements.current[postId] && posts.length > 0) {
-      console.log("SCROLLING NOW");
       postElements.current[postId]!.scrollIntoView({ behavior: "smooth" });
     }
   }, [searchParams, posts]);
