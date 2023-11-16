@@ -4,7 +4,7 @@ import { Database } from "@/lib/schema";
 import { useParams, useSearchParams } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Loader2 } from "lucide-react";
+import { Loader2, MoreVertical } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useUser } from "@/context/UserContext";
 import { useCommunity } from "@/context/CommunityContext";
@@ -19,7 +19,20 @@ import { SendHorizontal } from "lucide-react";
 import moment from "moment";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSeparator,
+  MenubarShortcut,
+  MenubarTrigger,
+} from "@/components/ui/menubar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Form,
   FormControl,
@@ -41,6 +54,7 @@ export default function PostPage() {
     Database["public"]["Tables"]["posts"]["Row"] | null
   >(null);
   const supabase = createClientComponentClient<Database>();
+  const [repliedCommentId, setRepliedCommentId] = useState<string | null>(null);
   const { postId } = useParams();
   const { currentUser } = useUser();
   const { community } = useCommunity();
@@ -106,12 +120,14 @@ export default function PostPage() {
           content: values.content,
           user_id: currentUser.id,
           post_id: post.id,
+          replied_comment_id: repliedCommentId,
         };
       const { data: comment } = await supabase
         .from("post_comments")
         .insert(createdComment)
         .select()
         .single();
+      setRepliedCommentId(null);
       if (comment) {
         postChannel.publish("comment", comment);
       }
@@ -119,7 +135,6 @@ export default function PostPage() {
 
     form.reset({ content: "" });
   }
-
   return (
     <div className="p-4 h-[calc(100vh-4.5rem)] flex flex-col overflow-y-auto">
       {post ? (
@@ -166,11 +181,37 @@ export default function PostPage() {
                     )}
                   />
                   <div className="flex justify-between items-center">
-                    <div className="text-xs">
-                      Comment as{" "}
-                      <span className="font-bold">
-                        {currentUser?.profile.username}
-                      </span>
+                    <div className="flex gap-4 text-xs items-start">
+                      <div className="">
+                        Comment as{" "}
+                        <span className="font-bold">
+                          {currentUser?.profile.username}
+                        </span>
+                      </div>
+                      {repliedCommentId && (
+                        <div className="border border-border rounded-full px-2 py-1 flex gap-2 items-center">
+                          <div>
+                            Replying to{" "}
+                            <span className="font-bold">
+                              {
+                                community?.members.find(
+                                  (m) =>
+                                    m.id ===
+                                    comments.find(
+                                      (c) => c.id === repliedCommentId
+                                    )?.user_id
+                                )?.username
+                              }
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => setRepliedCommentId(null)}
+                            className="hover:text-muted-foreground"
+                          >
+                            &times;
+                          </button>
+                        </div>
+                      )}
                     </div>
                     <Button type="submit" size="sm">
                       {/* <SendHorizontal size={20} /> */}
@@ -186,16 +227,56 @@ export default function PostPage() {
                   {comments.map((comment) => (
                     <div
                       key={comment.id}
-                      className="p-2 bg-secondary rounded-md"
+                      className="p-2 bg-secondary rounded-md group relative"
                     >
-                      <div className="text-xs text-muted-foreground">
-                        {
-                          community?.members.find(
-                            (m) => m.id === comment.user_id
-                          )?.username
-                        }
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="text-xs text-muted-foreground">
+                            {
+                              community?.members.find(
+                                (m) => m.id === comment.user_id
+                              )?.username
+                            }
+                          </div>
+                          <div>
+                            {comment.replied_comment_id && (
+                              <span className="font-semibold text-blue-500">
+                                @
+                                {
+                                  community?.members.find(
+                                    (m) =>
+                                      m.id ===
+                                      comments.find(
+                                        (c) =>
+                                          c.id === comment.replied_comment_id
+                                      )?.user_id
+                                  )?.username
+                                }{" "}
+                              </span>
+                            )}
+                            {comment.content}
+                          </div>
+                        </div>
+                        <Popover>
+                          <PopoverTrigger asChild className="">
+                            <button className="items-center justify-center flex hover:text-muted-foreground">
+                              <MoreVertical size={14} />
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="px-0 py-1 w-24">
+                            <Button
+                              onClick={() => {
+                                setRepliedCommentId(comment.id);
+                                console.log(comment.id);
+                              }}
+                              className="w-full justify-start"
+                              variant="ghost"
+                            >
+                              Reply
+                            </Button>
+                          </PopoverContent>
+                        </Popover>
                       </div>
-                      {comment.content}
                     </div>
                   ))}
                 </div>

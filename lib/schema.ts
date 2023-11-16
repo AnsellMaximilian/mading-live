@@ -216,25 +216,25 @@ export interface Database {
         Row: {
           content: string
           created_at: string
-          id: number
+          id: string
           post_id: string | null
-          replied_comment_id: number | null
+          replied_comment_id: string | null
           user_id: string | null
         }
         Insert: {
           content: string
           created_at?: string
-          id?: number
+          id?: string
           post_id?: string | null
-          replied_comment_id?: number | null
+          replied_comment_id?: string | null
           user_id?: string | null
         }
         Update: {
           content?: string
           created_at?: string
-          id?: number
+          id?: string
           post_id?: string | null
-          replied_comment_id?: number | null
+          replied_comment_id?: string | null
           user_id?: string | null
         }
         Relationships: [

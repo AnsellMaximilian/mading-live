@@ -8,3 +8,5 @@
 - [ ] Isolate spaces for communities
 - [x] Post comments
 - [ ] Kick members
+- [x] Post comment reply
+- [ ] Chat reply
