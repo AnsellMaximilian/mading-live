@@ -10,3 +10,4 @@
 - [ ] Kick members
 - [x] Post comment reply
 - [ ] Chat reply
+- [x] Fix logo (change svg letters into paths)
