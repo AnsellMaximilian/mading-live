@@ -29,6 +29,7 @@ import { useUser } from "@/context/UserContext";
 import { useCommunity } from "@/context/CommunityContext";
 import { Database } from "@/lib/schema";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useInView } from "react-intersection-observer";
 
 const formSchema = z.object({
   message: z.string().min(2, {
@@ -41,9 +42,12 @@ export default function ChatPage() {
     Database["public"]["Tables"]["chat_messages"]["Row"][]
   >([]);
 
+  const [isMessagesLoading, setIsMessagesLoading] = useState(false);
+
   const { currentUser } = useUser();
 
   const chatBottomRef = useRef<HTMLDivElement>(null);
+  const [currentBottomId, setCurrentBottomId] = useState<string | null>(null);
 
   const { community } = useCommunity();
 
@@ -91,8 +95,9 @@ export default function ChatPage() {
         .insert(createdMessage)
         .select()
         .single();
-
-      chatChannel.publish("add", message);
+      if (message) {
+        chatChannel.publish("add", message);
+      }
     }
 
     form.reset({ message: "" });
@@ -101,6 +106,7 @@ export default function ChatPage() {
   useEffect(() => {
     (async () => {
       if (community) {
+        setIsMessagesLoading(true);
         const { data: messages } = await supabase
           .from("chat_messages")
           .select("*")
@@ -109,15 +115,21 @@ export default function ChatPage() {
         if (messages) {
           setMessages(messages);
         }
+        setIsMessagesLoading(false);
       }
     })();
   }, [supabase, community]);
 
   useEffect(() => {
+    if (messages.length > 0) {
+      setCurrentBottomId(messages[messages.length - 1].id);
+    }
+  }, [messages]);
+  useEffect(() => {
     if (chatBottomRef.current) {
       chatBottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages]);
+  }, [currentBottomId]);
   return (
     <div className="h-[calc(100vh-4.5rem)] flex flex-col">
       <ScrollArea className="absolute h-full inset-x-0 px-4 flex flex-col justify-end">
