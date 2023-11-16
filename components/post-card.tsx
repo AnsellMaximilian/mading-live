@@ -43,7 +43,10 @@ export default function PostCard({ post, handleDelete }: Props) {
         </CardDescription> */}
       </CardHeader>
       <CardContent>
-        <div className="whitespace-pre-line">{post.content}</div>
+        <div className="whitespace-pre-line">
+          {post.content.substring(0, 100) +
+            (post.content.length > 100 ? "..." : "")}
+        </div>
         <div className="mt-2 flex justify-end">
           <div className="text-muted-foreground text-sm">
             Post by{" "}
