@@ -6,5 +6,5 @@
 - [x] Better sidebar on mobile & small screens
 - [x] Edit survey response
 - [ ] Isolate spaces for communities
-- [ ] Post comments
+- [x] Post comments
 - [ ] Kick members
