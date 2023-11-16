@@ -65,12 +65,12 @@ export default function PostCard({ post, handleDelete }: Props) {
           </Button>
         )}
         {/* <Button variant="outline">Cancel</Button> */}
-        {/* <Link
+        <Link
           href={`/communities/${post.community_id}/posts/${post.id}`}
           className=""
         >
           <Button>View</Button>
-        </Link> */}
+        </Link>
       </CardFooter>
     </Card>
   );
