@@ -114,6 +114,7 @@ export default function SurveyPage() {
             choice_id: choiceId,
           })
           .eq("user_id", currentUser.id)
+          .eq("survey_id", survey.id)
           .select()
           .single();
         if (answer) {
