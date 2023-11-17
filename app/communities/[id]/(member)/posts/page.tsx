@@ -45,6 +45,11 @@ const formSchema = z.object({
   content: z.string().min(20),
 });
 
+export type PostWithCommentIds =
+  Database["public"]["Tables"]["posts"]["Row"] & {
+    post_comments: { id: string }[];
+  };
+
 export default function PostsPage() {
   const [isCreateLoading, setIsCreateLoading] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -60,9 +65,7 @@ export default function PostsPage() {
 
   const searchParams = useSearchParams();
 
-  const [posts, setPosts] = useState<
-    Database["public"]["Tables"]["posts"]["Row"][]
-  >([]);
+  const [posts, setPosts] = useState<PostWithCommentIds[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -84,7 +87,7 @@ export default function PostsPage() {
           author_id: currentUser.id,
           community_id: community.id,
         })
-        .select()
+        .select("*, post_comments(id)")
         .single();
 
       if (post && !error) {
@@ -107,7 +110,7 @@ export default function PostsPage() {
       if (community) {
         const { data: posts } = await supabase
           .from("posts")
-          .select()
+          .select("*, post_comments(id)")
           .eq("community_id", community.id);
         if (posts) {
           setPosts(posts);

@@ -15,11 +15,12 @@ import Link from "next/link";
 import { Database } from "@/lib/schema";
 import { Badge } from "./ui/badge";
 import { useUser } from "@/context/UserContext";
-import { Loader2 } from "lucide-react";
+import { Loader2, MessagesSquare } from "lucide-react";
 import { useCommunity } from "@/context/CommunityContext";
+import { PostWithCommentIds } from "@/app/communities/[id]/(member)/posts/page";
 
 type Props = {
-  post: Database["public"]["Tables"]["posts"]["Row"];
+  post: PostWithCommentIds;
   handleDelete: (id: string) => Promise<void>;
 };
 
@@ -38,16 +39,13 @@ export default function PostCard({ post, handleDelete }: Props) {
     <Card className="">
       <CardHeader>
         <CardTitle>{post.title}</CardTitle>
-        {/* <CardDescription>
-          {survey.description ? survey.description : "No description."}
-        </CardDescription> */}
       </CardHeader>
       <CardContent>
         <div className="whitespace-pre-line">
           {post.content.substring(0, 100) +
             (post.content.length > 100 ? "..." : "")}
         </div>
-        <div className="mt-2 flex justify-end">
+        <div className="mt-4 flex justify-end">
           <div className="text-muted-foreground text-sm">
             Post by{" "}
             {community?.members.find((m) => m.id === post.author_id)?.username}
@@ -55,6 +53,10 @@ export default function PostCard({ post, handleDelete }: Props) {
         </div>
       </CardContent>
       <CardFooter className="flex justify-end gap-2">
+        <div className="text-muted-foreground text-sm flex gap-2 items-center mr-auto">
+          <MessagesSquare size={20} />
+          <span>{post.post_comments.length}</span>
+        </div>
         {post.author_id === currentUser?.id && (
           <Button
             variant="destructive"
