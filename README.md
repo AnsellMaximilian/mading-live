@@ -11,3 +11,6 @@
 - [x] Post comment reply
 - [ ] Chat reply
 - [x] Fix logo (change svg letters into paths)
+- [ ] Close survey
+- [ ] Announce/display survey results
+- [ ] Error toasts (auth, etc.)
