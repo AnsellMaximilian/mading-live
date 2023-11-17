@@ -19,7 +19,7 @@ export default function SurveyPage() {
   const supabase = createClientComponentClient<Database>();
   const { surveyId } = useParams();
   const { currentUser } = useUser();
-  const { community } = useCommunity();
+  const { community, sendMembersNotification } = useCommunity();
   const ablyClient = useAbly();
   const { toast } = useToast();
 
@@ -55,6 +55,8 @@ export default function SurveyPage() {
             return ans;
           })
         );
+      } else if (ablyMessage.name === "close") {
+        setSurvey((prev) => (prev ? { ...prev } : null));
       }
     };
     surveyChannel.subscribe(listener);
@@ -123,13 +125,26 @@ export default function SurveyPage() {
         }
       }
     }
+  };
 
-    // if (userAnswer) {
-    //   toast({
-    //     title: `You have already answered in the survey!`,
-    //     description: `Only one answer allowed per survey.`,
-    //   });
-    // }
+  const handleCloseSurvey = async () => {
+    const { data: survey } = await supabase
+      .from("surveys")
+      .update({ open: false })
+      .eq("id", surveyId)
+      .select("*, survey_choices(*)")
+      .single();
+
+    setSurvey(survey);
+    surveyChannel.publish("close");
+    if (survey) {
+      sendMembersNotification(
+        `Survey ${survey.title} has just closed. See the results.`,
+        survey.id,
+        undefined,
+        "survey_creation"
+      );
+    }
   };
 
   const choiceDistribution: { [id: string]: number } = useMemo(() => {
@@ -161,7 +176,7 @@ export default function SurveyPage() {
                 {survey.title}
               </h2>
               {survey.open ? (
-                <Badge className="bg-green-400">Open</Badge>
+                <Badge className="bg-green-400 hover:bg-green-400">Open</Badge>
               ) : (
                 <Badge variant="destructive">Closed</Badge>
               )}
@@ -197,11 +212,19 @@ export default function SurveyPage() {
               ? survey.description
               : "No description for this survey."}
           </div>
-          {/* {survey.open && (
-            <div>
-              <Button variant="destructive">Close Survey</Button>
+          {survey.open && survey.creator_id === currentUser?.id && (
+            <div className="flex justify-end">
+              <Button variant="destructive" onClick={() => handleCloseSurvey()}>
+                Close Survey
+              </Button>
             </div>
-          )} */}
+          )}
+          {!survey.open && (
+            <div className="">
+              <hr className="my-8" />
+              <div className="text-xl font-semibold">Survey has closed.</div>
+            </div>
+          )}
         </div>
       ) : (
         <div className="grow flex items-center justify-center">
