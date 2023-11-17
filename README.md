@@ -2,7 +2,7 @@
 
 ## TODOS
 
-- [ ] Limit chat message query; load on scroll
+- [ ] Limit chat message query; load on scroll or button
 - [x] Better sidebar on mobile & small screens
 - [x] Edit survey response
 - [ ] Isolate spaces for communities
@@ -13,4 +13,4 @@
 - [x] Fix logo (change svg letters into paths)
 - [ ] Close survey
 - [ ] Announce/display survey results
-- [ ] Error toasts (auth, etc.)
+- [x] Error toasts (auth, etc.)

@@ -13,6 +13,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
 import { Database } from "@/lib/schema";
 import { UserAuthForm } from "@/components/ui/user-auth-form";
+import { useToast } from "@/components/ui/use-toast";
 
 // export const metadata: Metadata = {
 //   title: "Authentication",
@@ -22,7 +23,7 @@ import { UserAuthForm } from "@/components/ui/user-auth-form";
 export default function SignUpPage() {
   const router = useRouter();
   const supabase = createClientComponentClient<Database>();
-  const { currentUser, setCurrentUser } = useUser();
+  const { toast } = useToast();
 
   const handleSignUp = async (email: string, password: string) => {
     const res = await supabase.auth.signUp({
@@ -32,12 +33,16 @@ export default function SignUpPage() {
         emailRedirectTo: `${location.origin}/auth/callback`,
       },
     });
-    router.push("/communities");
-  };
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.refresh();
+    if (res.error) {
+      toast({
+        title: "Authentication Error",
+        description: res.error.message,
+      });
+      return;
+    } else {
+      router.push("/communities");
+    }
   };
 
   return (

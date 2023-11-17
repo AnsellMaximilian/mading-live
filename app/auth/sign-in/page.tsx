@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import fullLogo from "@/assets/images/logo-full.svg";
+import { useToast } from "@/components/ui/use-toast";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -16,8 +17,9 @@ import { UserAuthForm } from "@/components/ui/user-auth-form";
 export default function SignUpPage() {
   const router = useRouter();
   const supabase = createClientComponentClient();
+  const { toast } = useToast();
 
-  const { currentUser, handleSetUserWithProfile } = useUser();
+  const { handleSetUserWithProfile } = useUser();
 
   const handleSignIn = async (email: string, password: string) => {
     const res = await supabase.auth.signInWithPassword({
@@ -25,6 +27,10 @@ export default function SignUpPage() {
       password,
     });
     if (res.error) {
+      toast({
+        title: "Authentication Error",
+        description: res.error.message,
+      });
       return;
     } else if (res.data.session) {
       await handleSetUserWithProfile(res.data.session.user);
