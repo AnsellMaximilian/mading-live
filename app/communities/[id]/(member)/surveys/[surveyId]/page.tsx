@@ -56,7 +56,7 @@ export default function SurveyPage() {
           })
         );
       } else if (ablyMessage.name === "close") {
-        setSurvey((prev) => (prev ? { ...prev } : null));
+        setSurvey((prev) => (prev ? { ...prev, open: false } : null));
       }
     };
     surveyChannel.subscribe(listener);
