@@ -130,6 +130,26 @@ export default function PostPage() {
       setRepliedCommentId(null);
       if (comment) {
         postChannel.publish("comment", comment);
+        // Send notification to post author
+        if (community) {
+          const { data: notification } = await supabase
+            .from("notifications")
+            .insert({
+              user_id: post.author_id,
+              community_id: community.id,
+              title: `Someone commented on your post "${post.title}"`,
+              read: false,
+              type: "post_creation",
+            })
+            .select()
+            .single();
+          if (notification) {
+            const notificationChannel = ablyClient.channels.get(
+              `notifications:${post.author_id}`
+            );
+            notificationChannel.publish("add", notification);
+          }
+        }
       }
     }
 

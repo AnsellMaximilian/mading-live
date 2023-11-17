@@ -14,3 +14,5 @@
 - [ ] Close survey
 - [ ] Announce/display survey results
 - [x] Error toasts (auth, etc.)
+- [ ] Notification on post comment
+- [ ] Show how many comments are in a post in the card
