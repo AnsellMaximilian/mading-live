@@ -136,7 +136,7 @@ export default function SurveyPage() {
       .single();
 
     setSurvey(survey);
-    surveyChannel.publish("close");
+    surveyChannel.publish("close", {});
     if (survey) {
       sendMembersNotification(
         `Survey ${survey.title} has just closed. See the results.`,
