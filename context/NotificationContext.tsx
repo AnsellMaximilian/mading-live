@@ -45,6 +45,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       if (ablyMessage.name === "add") {
         const notification: Database["public"]["Tables"]["notifications"]["Row"] =
           ablyMessage.data;
+        console.log(notification);
         setNotifications((prev) => [...prev, notification]);
       } else if (ablyMessage.name === "remove") {
         setNotifications((prev) =>

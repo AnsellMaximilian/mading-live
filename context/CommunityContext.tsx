@@ -153,13 +153,18 @@ export const CommunityContextProvider: React.FC<{ children: ReactNode }> = ({
             read: false,
           }));
 
-      const {} = await supabase.from("notifications").insert(notifications);
-      notifications.forEach((not) => {
-        const notificationChannel = ablyClient.channels.get(
-          `notifications:${not.user_id}`
-        );
-        notificationChannel.publish("add", not);
-      });
+      const { data: createdNotifications } = await supabase
+        .from("notifications")
+        .insert(notifications)
+        .select();
+      if (createdNotifications) {
+        createdNotifications.forEach((not) => {
+          const notificationChannel = ablyClient.channels.get(
+            `notifications:${not.user_id}`
+          );
+          notificationChannel.publish("add", not);
+        });
+      }
     }
   };
 
