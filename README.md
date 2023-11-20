@@ -14,6 +14,6 @@
 - [x] Close survey
 - [x] Announce/display survey results
 - [x] Error toasts (auth, etc.)
-- [ ] Notification on post comment
+- [x] Notification on post comment
 - [x] Show how many comments are in a post in the card
 - [x] Fix: live notifications not getting updated

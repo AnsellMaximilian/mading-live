@@ -32,8 +32,8 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useInView } from "react-intersection-observer";
 
 const formSchema = z.object({
-  message: z.string().min(2, {
-    message: "Message must be at least 2 characters.",
+  message: z.string().min(1, {
+    message: "Message must be at least 1 characters.",
   }),
 });
 
