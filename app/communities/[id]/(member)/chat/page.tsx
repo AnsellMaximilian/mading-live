@@ -48,6 +48,7 @@ export default function ChatPage() {
 
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const [currentBottomId, setCurrentBottomId] = useState<string | null>(null);
+  const [noMoreMessages, setNoMoreMessages] = useState(false);
 
   const { community } = useCommunity();
 
@@ -110,15 +111,52 @@ export default function ChatPage() {
         const { data: messages } = await supabase
           .from("chat_messages")
           .select("*")
-          .eq("community_id", community.id);
+          .eq("community_id", community.id)
+          .order("created_at", { ascending: false })
+          .range(0, 15);
 
         if (messages) {
-          setMessages(messages);
+          if (messages.length < 16) {
+            setNoMoreMessages(true);
+          }
+          const reversedMessages = messages.sort((a, b) => {
+            const dateA = new Date(a.created_at);
+            const dateB = new Date(b.created_at);
+            return dateA.getTime() - dateB.getTime();
+          });
+          setMessages(reversedMessages);
         }
         setIsMessagesLoading(false);
       }
     })();
   }, [supabase, community]);
+
+  const loadMoreMessages = async () => {
+    if (!noMoreMessages && community) {
+      if (community) {
+        setIsMessagesLoading(true);
+        const { data: newMessages } = await supabase
+          .from("chat_messages")
+          .select("*")
+          .eq("community_id", community.id)
+          .order("created_at", { ascending: false })
+          .range(messages.length, messages.length + 15);
+
+        if (newMessages) {
+          if (newMessages.length < 16) {
+            setNoMoreMessages(true);
+          }
+          const reversedMessages = newMessages.sort((a, b) => {
+            const dateA = new Date(a.created_at);
+            const dateB = new Date(b.created_at);
+            return dateA.getTime() - dateB.getTime();
+          });
+          setMessages((prev) => [...reversedMessages, ...prev]);
+        }
+        setIsMessagesLoading(false);
+      }
+    }
+  };
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -133,6 +171,20 @@ export default function ChatPage() {
   return (
     <div className="h-[calc(100vh-4.5rem)] flex flex-col">
       <ScrollArea className="absolute h-full inset-x-0 px-4 flex flex-col justify-end">
+        {!noMoreMessages && (
+          <div className="flex justify-center mt-2 gap-2 items-center">
+            <div className="h-[1px] bg-orange-500 grow"></div>
+            <Button
+              className="mx-auto"
+              variant="outline"
+              disabled={isMessagesLoading}
+              onClick={() => loadMoreMessages()}
+            >
+              {isMessagesLoading ? "Loading..." : "Load More"}
+            </Button>
+            <div className="h-[1px] bg-orange-500 grow"></div>
+          </div>
+        )}
         <div className="flex flex-col gap-2 py-2 relative">
           {messages.map((message) => (
             <ChatMessage

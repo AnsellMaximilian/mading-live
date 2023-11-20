@@ -2,7 +2,7 @@
 
 ## TODOS
 
-- [ ] Limit chat message query; load on scroll or button
+- [x] Limit chat message query; load on scroll or button
 - [x] Better sidebar on mobile & small screens
 - [x] Edit survey response
 - [ ] Isolate spaces for communities
