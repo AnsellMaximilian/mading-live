@@ -156,7 +156,7 @@ export default function Sidebar({ className, open }: SidebarProps) {
               </ActiveLink>
             </div>
           ) : (
-            <div className="p-4 flex items-center justify-center">
+            <div className="p-4 flex items-center justify-center grow">
               <Loader2 className="mr-2 h-8 w-8 animate-spin" />
             </div>
           )}

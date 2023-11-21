@@ -18,5 +18,5 @@
 - [x] Show how many comments are in a post in the card
 - [x] Fix: live notifications not getting updated
 - [ ] Chat background
-- [ ] Fix: Better sidebar loading UI
+- [x] Fix: Better sidebar loading UI
 - [x] Disable update community for members
