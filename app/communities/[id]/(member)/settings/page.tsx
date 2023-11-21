@@ -42,9 +42,6 @@ const formSchema = z.object({
     }),
   description: z
     .string()
-    .min(2, {
-      message: "Description must be at least 2 characters.",
-    })
     .max(30, {
       message: "Description must not be longer than 30 characters.",
     })
@@ -84,7 +81,10 @@ export default function SettingsPage() {
       form.setValue("name", community.name);
       form.setValue("description", community.description || "");
     }
-  }, [community]);
+  }, [community, form]);
+
+  const isAdmin = !!community?.members.find((m) => m.id === currentUser?.id)
+    ?.is_admin;
   return (
     <div className="h-[calc(100vh-4.5rem)] flex flex-col p-4">
       <div className="">
@@ -129,9 +129,9 @@ export default function SettingsPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isLoading}>
+              <Button type="submit" disabled={isLoading || !isAdmin}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Update Community
+                {isAdmin ? "Update Community" : "Missing Privilege"}
               </Button>
             </form>
           </Form>
