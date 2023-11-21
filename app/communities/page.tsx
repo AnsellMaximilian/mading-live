@@ -56,6 +56,7 @@ import { UserNav } from "@/components/ui/user-nav";
 import Notifications from "@/components/ui/notifications";
 import Link from "next/link";
 import Image from "next/image";
+import LoadingScreen from "@/components/ui/loading-screen";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -88,7 +89,6 @@ export default function CommunitiesPage() {
   useEffect(() => {
     (async () => {
       if (currentUser) {
-        setIsLoading(true);
         const { data } = await supabase
           .from("communities")
           .select("*, community_members!inner(user_id)")
@@ -129,9 +129,10 @@ export default function CommunitiesPage() {
 
   if (isLoading)
     return (
-      <div className="h-screen flex items-center justify-center">
-        Loading...
-      </div>
+      // <div className="h-screen flex items-center justify-center">
+      //   Loading...
+      // </div>
+      <LoadingScreen />
     );
 
   return (

@@ -20,3 +20,5 @@
 - [x] Chat background
 - [x] Fix: Better sidebar loading UI
 - [x] Disable update community for members
+- [ ] Username on register
+- [x] Loading screen
