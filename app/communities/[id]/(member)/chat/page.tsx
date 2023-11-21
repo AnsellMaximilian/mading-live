@@ -30,6 +30,7 @@ import { useCommunity } from "@/context/CommunityContext";
 import { Database } from "@/lib/schema";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useInView } from "react-intersection-observer";
+import chatBg from "@/assets/images/chat-bg.svg";
 
 const formSchema = z.object({
   message: z.string().min(1, {
@@ -170,7 +171,12 @@ export default function ChatPage() {
   }, [currentBottomId]);
   return (
     <div className="h-[calc(100vh-4.5rem)] flex flex-col">
-      <ScrollArea className="absolute h-full inset-x-0 px-4 flex flex-col justify-end">
+      <ScrollArea
+        className="absolute h-full inset-x-0 px-4 flex flex-col justify-end"
+        style={{
+          background: `url("${chatBg.src as string}")`,
+        }}
+      >
         {!noMoreMessages && (
           <div className="flex justify-center mt-2 gap-2 items-center">
             <div className="h-[1px] bg-orange-500 grow"></div>
