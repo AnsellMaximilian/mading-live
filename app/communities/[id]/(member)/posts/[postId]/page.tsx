@@ -4,7 +4,7 @@ import { Database } from "@/lib/schema";
 import { useParams, useSearchParams } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Loader2, MoreVertical } from "lucide-react";
+import { Loader2, MoreVertical, Reply } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useUser } from "@/context/UserContext";
 import { useCommunity } from "@/context/CommunityContext";
@@ -65,6 +65,13 @@ export default function PostPage() {
   >([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      content: "",
+    },
+  });
+
+  const replyForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       content: "",
@@ -154,6 +161,7 @@ export default function PostPage() {
     }
 
     form.reset({ content: "" });
+    replyForm.reset({ content: "" });
   }
   return (
     <div className="p-4 h-[calc(100vh-4.5rem)] flex flex-col overflow-y-auto">
@@ -208,33 +216,8 @@ export default function PostPage() {
                           {currentUser?.profile.username}
                         </span>
                       </div>
-                      {repliedCommentId && (
-                        <div className="border border-border rounded-full px-2 py-1 flex gap-2 items-center">
-                          <div>
-                            Replying to{" "}
-                            <span className="font-bold">
-                              {
-                                community?.members.find(
-                                  (m) =>
-                                    m.id ===
-                                    comments.find(
-                                      (c) => c.id === repliedCommentId
-                                    )?.user_id
-                                )?.username
-                              }
-                            </span>
-                          </div>
-                          <button
-                            onClick={() => setRepliedCommentId(null)}
-                            className="hover:text-muted-foreground"
-                          >
-                            &times;
-                          </button>
-                        </div>
-                      )}
                     </div>
                     <Button type="submit" size="sm">
-                      {/* <SendHorizontal size={20} /> */}
                       Comment
                     </Button>
                   </div>
@@ -244,61 +227,126 @@ export default function PostPage() {
             <div className="pb-16">
               {comments.length > 0 ? (
                 <div className="flex flex-col gap-4">
-                  {comments.map((comment) => (
-                    <div
-                      key={comment.id}
-                      className="p-2 bg-secondary rounded-md group relative"
-                    >
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <div className="text-xs text-muted-foreground">
-                            {
-                              community?.members.find(
-                                (m) => m.id === comment.user_id
-                              )?.username
-                            }
-                          </div>
-                          <div>
-                            {comment.replied_comment_id && (
-                              <span className="font-semibold text-blue-500">
-                                @
+                  {comments
+                    .filter((c) => !c.replied_comment_id)
+                    .map((comment) => (
+                      <div key={comment.id}>
+                        <div className="p-2 bg-secondary rounded-md group relative">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <div className="text-xs text-muted-foreground">
                                 {
                                   community?.members.find(
-                                    (m) =>
-                                      m.id ===
-                                      comments.find(
-                                        (c) =>
-                                          c.id === comment.replied_comment_id
-                                      )?.user_id
+                                    (m) => m.id === comment.user_id
                                   )?.username
-                                }{" "}
-                              </span>
-                            )}
-                            {comment.content}
+                                }
+                              </div>
+                              <div>{comment.content}</div>
+                            </div>
+                            <Popover>
+                              <PopoverTrigger asChild className="">
+                                <button className="items-center justify-center flex hover:text-muted-foreground">
+                                  <MoreVertical size={14} />
+                                </button>
+                              </PopoverTrigger>
+                              <PopoverContent className="px-0 py-1 w-24">
+                                <Button
+                                  onClick={() => {
+                                    setRepliedCommentId(comment.id);
+                                    console.log(comment.id);
+                                  }}
+                                  className="w-full justify-start"
+                                  variant="ghost"
+                                >
+                                  Reply
+                                </Button>
+                              </PopoverContent>
+                            </Popover>
                           </div>
                         </div>
-                        <Popover>
-                          <PopoverTrigger asChild className="">
-                            <button className="items-center justify-center flex hover:text-muted-foreground">
-                              <MoreVertical size={14} />
-                            </button>
-                          </PopoverTrigger>
-                          <PopoverContent className="px-0 py-1 w-24">
-                            <Button
-                              onClick={() => {
-                                setRepliedCommentId(comment.id);
-                                console.log(comment.id);
-                              }}
-                              className="w-full justify-start"
-                              variant="ghost"
+                        {comments
+                          .filter((c) => c.replied_comment_id === comment.id)
+                          .map((comment) => (
+                            <div
+                              key={comment.id}
+                              className="ml-4 mt-4 p-2 bg-secondary rounded-md group relative"
                             >
-                              Reply
-                            </Button>
-                          </PopoverContent>
-                        </Popover>
+                              <div className="flex justify-between items-center">
+                                <div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {
+                                      community?.members.find(
+                                        (m) => m.id === comment.user_id
+                                      )?.username
+                                    }
+                                  </div>
+                                  <div>
+                                    {comment.replied_comment_id && (
+                                      <span className="font-semibold text-blue-500">
+                                        @
+                                        {
+                                          community?.members.find(
+                                            (m) =>
+                                              m.id ===
+                                              comments.find(
+                                                (c) =>
+                                                  c.id ===
+                                                  comment.replied_comment_id
+                                              )?.user_id
+                                          )?.username
+                                        }{" "}
+                                      </span>
+                                    )}
+                                    {comment.content}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        {repliedCommentId &&
+                          repliedCommentId === comment.id && (
+                            <Form {...replyForm}>
+                              <form
+                                onSubmit={replyForm.handleSubmit(handleComment)}
+                                className="space-y-2 mt-4 pl-2"
+                              >
+                                <div className="flex gap-2 items-center">
+                                  <Reply />
+                                  <FormField
+                                    control={replyForm.control}
+                                    name="content"
+                                    render={({ field }) => (
+                                      <FormItem className="grow">
+                                        <FormControl>
+                                          <Input
+                                            placeholder="Reply"
+                                            type="text"
+                                            autoComplete="off"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                      </FormItem>
+                                    )}
+                                  />
+                                </div>
+                                <div className="flex justify-end gap-2">
+                                  <Button
+                                    onClick={() => setRepliedCommentId(null)}
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                  >
+                                    Cancel
+                                  </Button>
+                                  <Button type="submit" size="sm">
+                                    Reply
+                                  </Button>
+                                </div>
+                              </form>
+                            </Form>
+                          )}
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               ) : (
                 <div className="text-center text-muted-foreground">

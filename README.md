@@ -22,3 +22,5 @@
 - [x] Disable update community for members
 - [ ] Username on register
 - [x] Loading screen
+- [x] Improvement: better reply UI for posts
+- [ ] Delete post comments
