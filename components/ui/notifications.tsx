@@ -27,6 +27,7 @@ import { useUser } from "@/context/UserContext";
 import { useChannel, useAbly } from "ably/react";
 import { Types } from "ably";
 import { useCommunity } from "@/context/CommunityContext";
+import { ScrollArea } from "./scroll-area";
 
 export default function Notifications() {
   const { notifications } = useNotifications();
@@ -57,41 +58,43 @@ export default function Notifications() {
           {notifications.length <= 0 && (
             <div className="p-4 text-sm">No notifications.</div>
           )}
-          {notifications.map((notification) => {
-            return (
-              <Button
-                key={notification.id}
-                onClick={async () => {
-                  if (currentUser) {
-                    const { data, error, count } = await supabase
-                      .from("notifications")
-                      .update({ read: true })
-                      .eq("id", notification.id);
+          <ScrollArea className={notifications.length > 6 ? "h-96" : ""}>
+            {notifications.map((notification) => {
+              return (
+                <Button
+                  key={notification.id}
+                  onClick={async () => {
+                    if (currentUser) {
+                      const { data, error, count } = await supabase
+                        .from("notifications")
+                        .update({ read: true })
+                        .eq("id", notification.id);
 
-                    const notificationChannel = ablyClient.channels.get(
-                      `notifications:${currentUser.id}`
-                    );
-                    notificationChannel.publish("remove", notification.id);
-                    if (notification.type === "community_invitation") {
-                      router.push("/profile/invitations");
-                    } else if (notification.type === "survey_creation") {
-                      router.push(
-                        `/communities/${notification.community_id}/surveys/${notification.content_id}`
+                      const notificationChannel = ablyClient.channels.get(
+                        `notifications:${currentUser.id}`
                       );
-                    } else if (notification.type === "post_creation") {
-                      router.push(
-                        `/communities/${notification.community_id}/posts?postId=${notification.content_id}`
-                      );
+                      notificationChannel.publish("remove", notification.id);
+                      if (notification.type === "community_invitation") {
+                        router.push("/profile/invitations");
+                      } else if (notification.type === "survey_creation") {
+                        router.push(
+                          `/communities/${notification.community_id}/surveys/${notification.content_id}`
+                        );
+                      } else if (notification.type === "post_creation") {
+                        router.push(
+                          `/communities/${notification.community_id}/posts?postId=${notification.content_id}`
+                        );
+                      }
                     }
-                  }
-                }}
-                variant="ghost"
-                className="font-normal text-left justify-start h-auto after:content-[''] after:absolute after:left-2 relative after:h-1 after:w-1 after:rounded-full after:bg-red-600"
-              >
-                {notification.title}
-              </Button>
-            );
-          })}
+                  }}
+                  variant="ghost"
+                  className="font-normal text-left justify-start h-auto after:content-[''] after:absolute after:left-2 relative after:h-1 after:w-1 after:rounded-full after:bg-red-600"
+                >
+                  {notification.title}
+                </Button>
+              );
+            })}
+          </ScrollArea>
         </div>
       </PopoverContent>
     </Popover>

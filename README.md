@@ -24,3 +24,4 @@
 - [x] Loading screen
 - [x] Improvement: better reply UI for posts
 - [ ] Delete post comments
+- [x] Fix: notification popover length
