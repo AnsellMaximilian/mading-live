@@ -63,7 +63,9 @@ export default function PostPage() {
   const [comments, setComments] = useState<
     Database["public"]["Tables"]["post_comments"]["Row"][]
   >([]);
-
+  const [openPopoverCommentId, setOpenPopoverCommentId] = useState<
+    string | null
+  >(null);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -243,9 +245,22 @@ export default function PostPage() {
                               </div>
                               <div>{comment.content}</div>
                             </div>
-                            <Popover>
+                            <Popover
+                              open={openPopoverCommentId === comment.id}
+                              onOpenChange={(open) =>
+                                setOpenPopoverCommentId(
+                                  open ? comment.id : null
+                                )
+                              }
+                            >
                               <PopoverTrigger asChild className="">
-                                <button className="items-center justify-center flex hover:text-muted-foreground">
+                                <button
+                                  className={`items-center justify-center group-hover:flex hover:text-muted-foreground ${
+                                    openPopoverCommentId === comment.id
+                                      ? ""
+                                      : "hidden"
+                                  }`}
+                                >
                                   <MoreVertical size={14} />
                                 </button>
                               </PopoverTrigger>
@@ -253,7 +268,7 @@ export default function PostPage() {
                                 <Button
                                   onClick={() => {
                                     setRepliedCommentId(comment.id);
-                                    console.log(comment.id);
+                                    setOpenPopoverCommentId(null);
                                   }}
                                   className="w-full justify-start"
                                   variant="ghost"
