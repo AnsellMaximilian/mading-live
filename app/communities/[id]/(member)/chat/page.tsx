@@ -125,7 +125,14 @@ export default function ChatPage() {
             const dateB = new Date(b.created_at);
             return dateA.getTime() - dateB.getTime();
           });
-          setMessages(reversedMessages);
+          setMessages(
+            reversedMessages.map((m) => ({
+              ...m,
+              sender_username:
+                community.members.find((cm) => cm.id === m.user_id)?.username ||
+                m.sender_username,
+            }))
+          );
         }
         setIsMessagesLoading(false);
       }
@@ -152,7 +159,16 @@ export default function ChatPage() {
             const dateB = new Date(b.created_at);
             return dateA.getTime() - dateB.getTime();
           });
-          setMessages((prev) => [...reversedMessages, ...prev]);
+          setMessages((prev) => [
+            ...reversedMessages.map((m) => ({
+              ...m,
+              sender_username:
+                community.members.find((cm) => cm.id === m.user_id)?.username ||
+                m.sender_username,
+            })),
+
+            ...prev,
+          ]);
         }
         setIsMessagesLoading(false);
       }

@@ -26,3 +26,6 @@
 - [ ] Delete post comments
 - [x] Fix: notification popover length
 - [ ] Auto scroll to reply form
+- [ ] Confirm password
+- [ ] Reset password
+- [ ] Feat: events (show on dashboard)

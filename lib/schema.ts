@@ -15,6 +15,7 @@ export interface Database {
           content: string
           created_at: string
           id: string
+          replied_message_id: string | null
           sender_username: string
           user_id: string
         }
@@ -23,6 +24,7 @@ export interface Database {
           content: string
           created_at?: string
           id?: string
+          replied_message_id?: string | null
           sender_username: string
           user_id: string
         }
@@ -31,6 +33,7 @@ export interface Database {
           content?: string
           created_at?: string
           id?: string
+          replied_message_id?: string | null
           sender_username?: string
           user_id?: string
         }
@@ -40,6 +43,13 @@ export interface Database {
             columns: ["community_id"]
             isOneToOne: false
             referencedRelation: "communities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_replied_message_id_fkey"
+            columns: ["replied_message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
             referencedColumns: ["id"]
           },
           {
