@@ -38,10 +38,13 @@ const formSchema = z.object({
   }),
 });
 
+export type ChatMessage =
+  Database["public"]["Tables"]["chat_messages"]["Row"] & {
+    repliedMessage?: Database["public"]["Tables"]["chat_messages"]["Row"];
+  };
+
 export default function ChatPage() {
-  const [messages, setMessages] = useState<
-    Database["public"]["Tables"]["chat_messages"]["Row"][]
-  >([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const [isMessagesLoading, setIsMessagesLoading] = useState(false);
 
@@ -61,11 +64,14 @@ export default function ChatPage() {
     return ablyClient.channels.get(`messages:${community?.id}`);
   }, [community, ablyClient]);
 
+  const [repliedMessage, setRepliedMessage] = useState<null | ChatMessage>(
+    null
+  );
+
   useEffect(() => {
     const listener = (ablyMessage: Types.Message) => {
       if (ablyMessage.name === "add") {
-        const message: Database["public"]["Tables"]["chat_messages"]["Row"] =
-          ablyMessage.data;
+        const message: ChatMessage = ablyMessage.data;
         setMessages((prev) => [...prev, message]);
       }
     };
@@ -91,6 +97,7 @@ export default function ChatPage() {
           user_id: currentUser.id,
           community_id: community.id,
           sender_username: currentUser.profile.username,
+          replied_message_id: repliedMessage ? repliedMessage.id : null,
         };
       const { data: message } = await supabase
         .from("chat_messages")
@@ -98,7 +105,11 @@ export default function ChatPage() {
         .select()
         .single();
       if (message) {
-        chatChannel.publish("add", message);
+        chatChannel.publish("add", {
+          ...message,
+          repliedMessage: repliedMessage ? repliedMessage : undefined,
+        });
+        setRepliedMessage(null);
       }
     }
 
@@ -125,12 +136,26 @@ export default function ChatPage() {
             const dateB = new Date(b.created_at);
             return dateA.getTime() - dateB.getTime();
           });
+
+          const { data: repliedMessages } = await supabase
+            .from("chat_messages")
+            .select()
+            .in(
+              "id",
+              messages
+                .filter((m) => m.replied_message_id)
+                .map((m) => m.replied_message_id)
+            );
+
           setMessages(
             reversedMessages.map((m) => ({
               ...m,
               sender_username:
                 community.members.find((cm) => cm.id === m.user_id)?.username ||
                 m.sender_username,
+              repliedMessage: repliedMessages?.find(
+                (rm) => rm.id === m.replied_message_id
+              ),
             }))
           );
         }
@@ -159,12 +184,24 @@ export default function ChatPage() {
             const dateB = new Date(b.created_at);
             return dateA.getTime() - dateB.getTime();
           });
+          const { data: repliedMessages } = await supabase
+            .from("chat_messages")
+            .select()
+            .in(
+              "id",
+              messages
+                .filter((m) => m.replied_message_id)
+                .map((m) => m.replied_message_id)
+            );
           setMessages((prev) => [
             ...reversedMessages.map((m) => ({
               ...m,
               sender_username:
                 community.members.find((cm) => cm.id === m.user_id)?.username ||
                 m.sender_username,
+              repliedMessage: repliedMessages?.find(
+                (rm) => rm.id === m.replied_message_id
+              ),
             })),
 
             ...prev,
@@ -209,39 +246,66 @@ export default function ChatPage() {
         )}
         <div className="flex flex-col gap-2 py-2 relative">
           {messages.map((message) => (
-            <ChatMessage
+            <div
               key={message.id}
-              message={message}
-              isCurrentUser={currentUser?.id === message.user_id}
-            />
+              onDoubleClick={() => {
+                setRepliedMessage(message);
+              }}
+            >
+              <ChatMessage
+                message={message}
+                isCurrentUser={currentUser?.id === message.user_id}
+              />
+            </div>
           ))}
         </div>
         <div ref={chatBottomRef} className="relative top-24"></div>
       </ScrollArea>
-      <div className="p-4 bg-accent">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2">
-            <FormField
-              control={form.control}
-              name="message"
-              render={({ field }) => (
-                <FormItem className="grow">
-                  <FormControl>
-                    <Input
-                      placeholder="How are you?"
-                      type="text"
-                      autoComplete="off"
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <Button type="submit">
-              <SendHorizontal size={20} />
-            </Button>
-          </form>
-        </Form>
+      <div>
+        {repliedMessage && (
+          <div className="bg-slate-200 p-4 text-sm text-muted-foreground flex justify-between items-center">
+            <div>
+              <div className="">
+                Replying to{" "}
+                <span className="font-bold">
+                  {repliedMessage.sender_username}
+                </span>
+              </div>
+              <div>{`> ${repliedMessage.content}`}</div>
+            </div>
+            <button
+              className="hover:font-bold text-lg"
+              onClick={() => setRepliedMessage(null)}
+            >
+              &times;
+            </button>
+          </div>
+        )}
+        <div className="p-4 bg-accent">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2">
+              <FormField
+                control={form.control}
+                name="message"
+                render={({ field }) => (
+                  <FormItem className="grow">
+                    <FormControl>
+                      <Input
+                        placeholder="How are you?"
+                        type="text"
+                        autoComplete="off"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <Button type="submit">
+                <SendHorizontal size={20} />
+              </Button>
+            </form>
+          </Form>
+        </div>
       </div>
     </div>
   );

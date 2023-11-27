@@ -9,7 +9,7 @@
 - [x] Post comments
 - [ ] Kick members
 - [x] Post comment reply
-- [ ] Chat reply
+- [x] Chat reply
 - [x] Fix logo (change svg letters into paths)
 - [x] Close survey
 - [x] Announce/display survey results
@@ -29,3 +29,5 @@
 - [ ] Confirm password
 - [ ] Reset password
 - [ ] Feat: events (show on dashboard)
+- [ ] Scroll to replied message
+- [ ] Auto focus upon clicking reply
