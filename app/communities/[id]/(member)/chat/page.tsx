@@ -247,6 +247,7 @@ export default function ChatPage() {
         <div className="flex flex-col gap-2 py-2 relative">
           {messages.map((message) => (
             <div
+              id={message.id}
               key={message.id}
               onDoubleClick={() => {
                 setRepliedMessage(message);

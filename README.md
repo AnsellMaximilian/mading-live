@@ -29,5 +29,7 @@
 - [ ] Confirm password
 - [ ] Reset password
 - [ ] Feat: events (show on dashboard)
-- [ ] Scroll to replied message
+- [x] Scroll to replied message
 - [ ] Auto focus upon clicking reply
+- [ ] Highlight reply upon scroll
+- [ ] Show error toast when replied message is not loaded
