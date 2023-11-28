@@ -1,9 +1,12 @@
+"use client";
+
 import { ChatMessage } from "@/app/communities/[id]/(member)/chat/page";
 import { Database } from "@/lib/schema";
 import { Message } from "@/lib/types";
 import { Reply } from "lucide-react";
 import moment from "moment";
 import React, { HTMLProps } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 type Props = HTMLProps<HTMLDivElement> & {
   message: ChatMessage;
@@ -11,6 +14,8 @@ type Props = HTMLProps<HTMLDivElement> & {
 };
 
 export default function ChatMessage({ message, isCurrentUser = false }: Props) {
+  const { toast } = useToast();
+
   return (
     <div className="flex">
       <div className={`${isCurrentUser ? "ml-auto" : ""} `}>
@@ -23,6 +28,12 @@ export default function ChatMessage({ message, isCurrentUser = false }: Props) {
                 : undefined;
               if (repliedMessageElement) {
                 repliedMessageElement.scrollIntoView({ behavior: "smooth" });
+              } else {
+                toast({
+                  title: "Message not loaded.",
+                  description:
+                    "Load more messages to find the replied message.",
+                });
               }
             }}
           >

@@ -28,8 +28,11 @@
 - [ ] Auto scroll to reply form
 - [ ] Confirm password
 - [ ] Reset password
-- [ ] Feat: events (show on dashboard)
+- [ ] Feat: events
+  - [ ] Create events (name, time/due date, location)
+  - [ ] List events
+  - [ ] Show events and relative time on dashboard
 - [x] Scroll to replied message
 - [ ] Auto focus upon clicking reply
 - [ ] Highlight reply upon scroll
-- [ ] Show error toast when replied message is not loaded
+- [x] Show error toast when replied message is not loaded
