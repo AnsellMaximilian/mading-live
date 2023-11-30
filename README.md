@@ -33,6 +33,6 @@
   - [ ] List events
   - [ ] Show events and relative time on dashboard
 - [x] Scroll to replied message
-- [ ] Auto focus upon clicking reply
+- [x] Auto focus upon clicking reply
 - [ ] Highlight reply upon scroll
 - [x] Show error toast when replied message is not loaded

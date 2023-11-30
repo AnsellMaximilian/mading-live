@@ -50,6 +50,8 @@ export default function ChatPage() {
 
   const { currentUser } = useUser();
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const [currentBottomId, setCurrentBottomId] = useState<string | null>(null);
   const [noMoreMessages, setNoMoreMessages] = useState(false);
@@ -251,6 +253,7 @@ export default function ChatPage() {
               key={message.id}
               onDoubleClick={() => {
                 setRepliedMessage(message);
+                inputRef.current?.focus();
               }}
             >
               <ChatMessage
@@ -296,6 +299,7 @@ export default function ChatPage() {
                         type="text"
                         autoComplete="off"
                         {...field}
+                        ref={inputRef}
                       />
                     </FormControl>
                   </FormItem>
