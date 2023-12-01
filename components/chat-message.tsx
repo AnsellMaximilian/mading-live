@@ -11,9 +11,14 @@ import { useToast } from "@/components/ui/use-toast";
 type Props = HTMLProps<HTMLDivElement> & {
   message: ChatMessage;
   isCurrentUser?: boolean;
+  setHighlightedMessageId: (id: string | null) => void;
 };
 
-export default function ChatMessage({ message, isCurrentUser = false }: Props) {
+export default function ChatMessage({
+  message,
+  isCurrentUser = false,
+  setHighlightedMessageId,
+}: Props) {
   const { toast } = useToast();
 
   return (
@@ -23,17 +28,21 @@ export default function ChatMessage({ message, isCurrentUser = false }: Props) {
           <button
             className="text-xs mb-1 flex gap-1 items-center hover:underline"
             onClick={() => {
-              const repliedMessageElement = message.repliedMessage
-                ? document.getElementById(message.repliedMessage.id)
-                : undefined;
-              if (repliedMessageElement) {
-                repliedMessageElement.scrollIntoView({ behavior: "smooth" });
-              } else {
-                toast({
-                  title: "Message not loaded.",
-                  description:
-                    "Load more messages to find the replied message.",
-                });
+              if (message.repliedMessage) {
+                const repliedMessageElement = document.getElementById(
+                  message.repliedMessage.id
+                );
+
+                if (repliedMessageElement) {
+                  repliedMessageElement.scrollIntoView({ behavior: "smooth" });
+                  setHighlightedMessageId(message.repliedMessage.id);
+                } else {
+                  toast({
+                    title: "Message not loaded.",
+                    description:
+                      "Load more messages to find the replied message.",
+                  });
+                }
               }
             }}
           >

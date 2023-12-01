@@ -70,6 +70,10 @@ export default function ChatPage() {
     null
   );
 
+  const [highlightedMessageId, setHighlightedMessageId] = useState<
+    null | string
+  >(null);
+
   useEffect(() => {
     const listener = (ablyMessage: Types.Message) => {
       if (ablyMessage.name === "add") {
@@ -224,6 +228,18 @@ export default function ChatPage() {
       chatBottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [currentBottomId]);
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (highlightedMessageId) {
+      timeout = setTimeout(() => {
+        setHighlightedMessageId(null);
+      }, 1000);
+    }
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [highlightedMessageId]);
   return (
     <div className="h-[calc(100vh-4.5rem)] flex flex-col">
       <ScrollArea
@@ -255,10 +271,14 @@ export default function ChatPage() {
                 setRepliedMessage(message);
                 inputRef.current?.focus();
               }}
+              className={`transition-all duration-150 ${
+                highlightedMessageId === message.id ? "bg-orange-50" : ""
+              }`}
             >
               <ChatMessage
                 message={message}
                 isCurrentUser={currentUser?.id === message.user_id}
+                setHighlightedMessageId={setHighlightedMessageId}
               />
             </div>
           ))}
