@@ -25,7 +25,7 @@
 - [x] Improvement: better reply UI for posts
 - [ ] Delete post comments
 - [x] Fix: notification popover length
-- [ ] Auto scroll to reply form
+- [x] Auto scroll to reply form
 - [ ] Confirm password
 - [ ] Reset password
 - [ ] Feat: events
