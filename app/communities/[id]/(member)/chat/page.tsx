@@ -264,19 +264,27 @@ export default function ChatPage() {
         )}
         <div className="flex flex-col gap-2 py-2 relative">
           {messages.map((message, idx) => {
-            const shouldDisplayDate =
+            const messageDay = moment(message.created_at);
+            const isFirstOfDay =
               idx === 0 ||
-              !moment(message.created_at).isSame(
-                messages[idx - 1]?.created_at,
-                "day"
-              );
+              !messageDay.isSame(messages[idx - 1]?.created_at, "day");
+
+            const isToday = messageDay.isSame(moment(), "day");
+            const isYesterday = messageDay.isSame(
+              moment().subtract(1, "day"),
+              "day"
+            );
 
             return (
               <div key={message.id}>
-                {shouldDisplayDate && (
+                {isFirstOfDay && (
                   <div className="flex justify-center">
-                    <div className="bg-secondary text-secondary-foreground shadow-md px-4 py-1 rounded-sm text-xs">
-                      {moment(message.created_at).format("DD MMM, YYYY")}
+                    <div className="bg-secondary text-secondary-foreground shadow-sm px-4 py-1 rounded-sm text-xs">
+                      {isToday
+                        ? "Today"
+                        : isYesterday
+                        ? "Yesterday"
+                        : moment(message.created_at).format("DD MMM, YYYY")}
                     </div>
                   </div>
                 )}

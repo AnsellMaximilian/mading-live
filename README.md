@@ -37,4 +37,5 @@
 - [x] Highlight reply upon scroll
 - [x] Show error toast when replied message is not loaded
 - [x] Organize messages by dates
-- [ ] Label today and yesterday messages
+- [x] Label today and yesterday messages
+- [ ] Show when people are typing
