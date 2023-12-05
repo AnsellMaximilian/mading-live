@@ -36,3 +36,5 @@
 - [x] Auto focus upon clicking reply
 - [x] Highlight reply upon scroll
 - [x] Show error toast when replied message is not loaded
+- [x] Organize messages by dates
+- [ ] Label today and yesterday messages

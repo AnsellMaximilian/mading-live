@@ -263,25 +263,42 @@ export default function ChatPage() {
           </div>
         )}
         <div className="flex flex-col gap-2 py-2 relative">
-          {messages.map((message) => (
-            <div
-              id={message.id}
-              key={message.id}
-              onDoubleClick={() => {
-                setRepliedMessage(message);
-                inputRef.current?.focus();
-              }}
-              className={`transition-all duration-150 ${
-                highlightedMessageId === message.id ? "bg-orange-50" : ""
-              }`}
-            >
-              <ChatMessage
-                message={message}
-                isCurrentUser={currentUser?.id === message.user_id}
-                setHighlightedMessageId={setHighlightedMessageId}
-              />
-            </div>
-          ))}
+          {messages.map((message, idx) => {
+            const shouldDisplayDate =
+              idx === 0 ||
+              !moment(message.created_at).isSame(
+                messages[idx - 1]?.created_at,
+                "day"
+              );
+
+            return (
+              <div key={message.id}>
+                {shouldDisplayDate && (
+                  <div className="flex justify-center">
+                    <div className="bg-secondary text-secondary-foreground shadow-md px-4 py-1 rounded-sm text-xs">
+                      {moment(message.created_at).format("DD MMM, YYYY")}
+                    </div>
+                  </div>
+                )}
+                <div
+                  id={message.id}
+                  onDoubleClick={() => {
+                    setRepliedMessage(message);
+                    inputRef.current?.focus();
+                  }}
+                  className={`transition-all duration-150 ${
+                    highlightedMessageId === message.id ? "bg-orange-50" : ""
+                  }`}
+                >
+                  <ChatMessage
+                    message={message}
+                    isCurrentUser={currentUser?.id === message.user_id}
+                    setHighlightedMessageId={setHighlightedMessageId}
+                  />
+                </div>
+              </div>
+            );
+          })}
         </div>
         <div ref={chatBottomRef} className="relative top-24"></div>
       </ScrollArea>
