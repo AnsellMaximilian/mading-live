@@ -1,12 +1,18 @@
 "use client";
 
 import { ChatMessage } from "@/app/communities/[id]/(member)/chat/page";
-import { Database } from "@/lib/schema";
-import { Message } from "@/lib/types";
-import { Reply } from "lucide-react";
+import { MoreHorizontal, Reply } from "lucide-react";
 import moment from "moment";
-import React, { HTMLProps } from "react";
+import React, { HTMLProps, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type Props = HTMLProps<HTMLDivElement> & {
   message: ChatMessage;
@@ -20,6 +26,7 @@ export default function ChatMessage({
   setHighlightedMessageId,
 }: Props) {
   const { toast } = useToast();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <div className="flex">
@@ -57,7 +64,22 @@ export default function ChatMessage({
             </div>
           </button>
         )}
-        <div className="p-2 bg-orange-100 rounded-md relative">
+        <div className="p-2 bg-orange-100 rounded-md relative group">
+          <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+            <DropdownMenuTrigger asChild>
+              <button
+                className={`absolute right-1 top-1 group-hover:block ${
+                  menuOpen ? "" : "hidden"
+                }`}
+              >
+                <MoreHorizontal size={12} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>Reply</DropdownMenuItem>
+              <DropdownMenuItem>Delete</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <div className="text-xs font-semibold">{message.sender_username}</div>
           <div className="text-sm pr-10">{message.content}</div>
           <div className="text-xs text-muted-foreground absolute bottom-1 right-2">
