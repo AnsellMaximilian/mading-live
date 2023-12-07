@@ -79,6 +79,9 @@ export default function ChatPage() {
       if (ablyMessage.name === "add") {
         const message: ChatMessage = ablyMessage.data;
         setMessages((prev) => [...prev, message]);
+      } else if (ablyMessage.name === "delete") {
+        const id: string = ablyMessage.data;
+        setMessages((prev) => prev.filter((m) => m.id !== id));
       }
     };
     chatChannel.subscribe(listener);
@@ -302,6 +305,7 @@ export default function ChatPage() {
                     message={message}
                     isCurrentUser={currentUser?.id === message.user_id}
                     setHighlightedMessageId={setHighlightedMessageId}
+                    handleReply={() => setRepliedMessage(message)}
                   />
                 </div>
               </div>

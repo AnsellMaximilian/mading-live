@@ -1,9 +1,9 @@
 "use client";
 
-import { ChatMessage } from "@/app/communities/[id]/(member)/chat/page";
+import { ChatMessage as IChatMessage } from "@/app/communities/[id]/(member)/chat/page";
 import { MoreHorizontal, Reply } from "lucide-react";
 import moment from "moment";
-import React, { HTMLProps, useState } from "react";
+import React, { HTMLProps, useMemo, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import {
   DropdownMenu,
@@ -13,20 +13,43 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useChannel, useAbly } from "ably/react";
+import { useCommunity } from "@/context/CommunityContext";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "@/lib/schema";
 
 type Props = HTMLProps<HTMLDivElement> & {
-  message: ChatMessage;
+  message: IChatMessage;
   isCurrentUser?: boolean;
   setHighlightedMessageId: (id: string | null) => void;
+  handleReply: () => void;
 };
 
 export default function ChatMessage({
   message,
   isCurrentUser = false,
   setHighlightedMessageId,
+  handleReply,
 }: Props) {
   const { toast } = useToast();
   const [menuOpen, setMenuOpen] = useState(false);
+  const ablyClient = useAbly();
+  const { community } = useCommunity();
+  const supabase = createClientComponentClient<Database>();
+
+  const chatChannel = useMemo(() => {
+    return ablyClient.channels.get(`messages:${community?.id}`);
+  }, [community, ablyClient]);
+
+  const handleDelete = async () => {
+    const { error } = await supabase
+      .from("chat_messages")
+      .delete()
+      .eq("id", message.id);
+    if (!error) {
+      chatChannel.publish("delete", message.id);
+    }
+  };
 
   return (
     <div className="flex">
@@ -76,8 +99,8 @@ export default function ChatMessage({
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem>Reply</DropdownMenuItem>
-              <DropdownMenuItem>Delete</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleReply}>Reply</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <div className="text-xs font-semibold">{message.sender_username}</div>
