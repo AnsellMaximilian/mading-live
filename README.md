@@ -39,3 +39,6 @@
 - [x] Organize messages by dates
 - [x] Label today and yesterday messages
 - [ ] Show when people are typing
+- [ ] Delete chat message
+- [ ] Move post comments into own component for better hover menu
+- [ ] Reply via context menu

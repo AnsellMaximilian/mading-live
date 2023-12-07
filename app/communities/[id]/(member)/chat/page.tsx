@@ -278,7 +278,7 @@ export default function ChatPage() {
             return (
               <div key={message.id}>
                 {isFirstOfDay && (
-                  <div className="flex justify-center">
+                  <div className="flex justify-center mb-4">
                     <div className="bg-secondary text-secondary-foreground shadow-sm px-4 py-1 rounded-sm text-xs">
                       {isToday
                         ? "Today"
