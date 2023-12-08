@@ -33,10 +33,10 @@ import { Database } from "@/lib/schema";
 import { useUser } from "@/context/UserContext";
 import { useCommunity } from "@/context/CommunityContext";
 import { cn } from "@/lib/utils";
-import SurveyCard from "@/components/survey-card";
 import PostCard from "@/components/post-card";
 import { useSearchParams } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -115,6 +115,7 @@ export default function PostsPage() {
         if (posts) {
           setPosts(posts);
         }
+        setIsLoading(false);
       }
     })();
   }, [community, supabase]);
@@ -219,7 +220,14 @@ export default function PostsPage() {
             </DialogContent>
           </Dialog>
         </div>
-        {posts.length > 0 ? (
+        {isLoading ? (
+          <div className="space-y-6">
+            <Skeleton className="h-[270px] rounded-md" />
+            <Skeleton className="h-[270px] rounded-md" />
+            <Skeleton className="h-[270px] rounded-md" />
+            <Skeleton className="h-[270px] rounded-md" />
+          </div>
+        ) : posts.length > 0 ? (
           <div className="grid grid-cols-12 gap-6">
             {posts.map((post) => (
               <div
