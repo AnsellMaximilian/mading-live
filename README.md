@@ -45,3 +45,8 @@
 - [ ] Private/Public profiles
 - [ ] Feat: invite email suggestions
 - [x] Posts page skeleton
+- [ ] Collapsible replies in posts
+- [ ] Fix context menu flashing on wrong spot
+- [ ] Auto scroll and auto focus to reply box on post comments
+- [ ] Edit chat message
+- [ ] Message info modal
